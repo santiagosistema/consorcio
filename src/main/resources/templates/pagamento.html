@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Controle de pagamentos</title>
+
+    <link rel="icon" th:href="@{/assets/images/favicon.ico}">
+    <link rel="stylesheet"
+          th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet"
+          th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+	
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <style>
+        .filtro-pagamento {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .pagamento-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: #fff;
+        }
+
+        .pagamento-cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .pagamento-nome {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .pagamento-detalhes {
+            color: #6b7280;
+            font-size: .9rem;
+        }
+
+        .pagamento-acoes {
+            display: flex;
+            gap: 8px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .pagamento-acoes input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .status-paga {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-atraso {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status-aberto {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .status-pagamento {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: .8rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+            .filtro-pagamento {
+                grid-template-columns: 1fr 1fr auto;
+                align-items: end;
+            }
+
+            .pagamento-acoes {
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="menu" th:data-url="@{/fragments/menu}"></div>
+
+<div class="main-wrapper">
+
+    <div id="topnavbar"
+         th:attr="data-url=@{/fragments/topnavbar}"></div>
+
+    <main class="container-fluid py-3">
+
+        <div class="card border-light shadow-sm p-3 p-md-4">
+
+            <h4 class="mb-2">
+                <i class="bi bi-cash-coin me-2"></i>
+                Controle de pagamentos
+            </h4>
+
+            <p class="text-muted mb-4">
+                Consulte as parcelas do mês e registre os pagamentos recebidos.
+            </p>
+
+            <div id="pagamentoApp"
+                 th:attr="data-listar-url=@{/api/pagamento/parcelas},
+                          data-pagar-url=@{/api/pagamento}">
+
+                <div class="filtro-pagamento mb-4">
+
+                    <div>
+                        <label for="grupo" class="form-label">
+                            Grupo do consórcio
+                        </label>
+
+                        <select id="grupo"
+                                class="form-select"
+                                required>
+                            <option value="">Selecione um grupo...</option>
+
+                            <option th:each="grupo : ${grupos}"
+                                    th:value="${grupo.id}"
+                                    th:text="${grupo.nomeGrupo}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="mes" class="form-label">
+                            Mês de vencimento
+                        </label>
+
+                        <input type="month"
+                               id="mes"
+                               class="form-control"
+                               th:value="${mesAtual}"
+                               required>
+                    </div>
+
+                    <button type="button"
+                            id="consultar"
+                            class="btn-custom btn-custom-primary">
+                        <i class="bi bi-search me-1"></i>
+                        Consultar
+                    </button>
+
+                </div>
+
+                <div id="mensagem"
+                     class="mb-3"
+                     role="status"
+                     aria-live="polite"></div>
+
+                <div id="resumo" class="row g-3 mb-4 d-none">
+
+                    <div class="col-12 col-md-4">
+                        <div class="card p-3 h-100">
+                            <div class="text-muted">Total de parcelas</div>
+                            <div id="totalParcelas" class="fs-4 fw-bold">0</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card p-3 h-100">
+                            <div class="text-muted">Valor recebido</div>
+                            <div id="totalPago" class="fs-4 fw-bold">R$ 0,00</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="card p-3 h-100">
+                            <div class="text-muted">Valor pendente</div>
+                            <div id="totalPendente" class="fs-4 fw-bold">R$ 0,00</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="listaParcelas"></div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-custom" style="margin-top: 45px;">
+        <div class="footer-left">
+            <span class="footer-logo">
+                <i class="bi bi-cash-coin"></i>
+                Controle de pagamentos
+            </span>
+
+            <span class="footer-separator">|</span>
+
+            <span class="footer-copy">
+                &copy; 2026 Santiago Sistemas
+            </span>
+        </div>
+    </footer>
+
+</div>
+
+<!-- Bibliotecas Script -->
+<script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+<script th:src="@{/assets/js/notification.js}"></script>
+
+<!-- Biblioteca dashboard  -->
+<script th:src="@{/assets/js/dashboard.js}"></script>
+
+<!-- SCRIPT DOS MENUS -->
+<script th:inline="javascript">
+	$(document).ready(function () {
+
+		const menuUrl = $("#menu").attr("data-url");
+		const navbarUrl = $("#topnavbar").attr("data-url");
+
+		$("#menu").load(menuUrl, function (response, status, xhr) {
+			if (status === "error") {
+				console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+			}
+		});
+
+		$("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+			if (status === "error") {
+				console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+			}
+		});
+
+	});
+</script>
+<!-- SCRIPT DOS MENUS -->
+
+
+<!-- SCRIPT GERAL -->
+<script>
+	
+	const csrfToken =
+	    document.querySelector('meta[name="_csrf"]')?.content;
+
+	const csrfHeader =
+	    document.querySelector('meta[name="_csrf_header"]')?.content;
+
+$(function () {
+    $("#menu").load($("#menu").attr("data-url"));
+    $("#topnavbar").load($("#topnavbar").attr("data-url"));
+});
+
+(() => {
+    "use strict";
+
+    const app = document.getElementById("pagamentoApp");
+    const grupo = document.getElementById("grupo");
+    const mes = document.getElementById("mes");
+    const consultar = document.getElementById("consultar");
+    const mensagem = document.getElementById("mensagem");
+    const lista = document.getElementById("listaParcelas");
+    const resumo = document.getElementById("resumo");
+
+    const dataHoje = new Date();
+    const hoje = [
+        dataHoje.getFullYear(),
+        String(dataHoje.getMonth() + 1).padStart(2, "0"),
+        String(dataHoje.getDate()).padStart(2, "0")
+    ].join("-");
+
+    let parcelasAtuais = [];
+
+    function exibirMensagem(texto, erro = false) {
+        mensagem.textContent = texto;
+        mensagem.className = erro
+            ? "mb-3 text-danger"
+            : "mb-3 text-success";
+    }
+
+    function moeda(valor) {
+        return Number(valor).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+    }
+
+    function dataBR(data) {
+        if (!data) return "—";
+
+        const [ano, mes, dia] = data.split("-");
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    function criarElemento(tag, classe, texto) {
+        const elemento = document.createElement(tag);
+
+        if (classe) elemento.className = classe;
+        if (texto !== undefined) elemento.textContent = texto;
+
+        return elemento;
+    }
+
+    function atualizarResumo() {
+        const total = parcelasAtuais.length;
+
+        const pagas = parcelasAtuais
+            .filter(p => p.situacao === "paga")
+            .reduce((soma, p) => soma + Number(p.valorDevido), 0);
+
+        const pendente = parcelasAtuais
+            .filter(p => p.situacao !== "paga")
+            .reduce((soma, p) => soma + Number(p.valorDevido), 0);
+
+        document.getElementById("totalParcelas").textContent = total;
+        document.getElementById("totalPago").textContent = moeda(pagas);
+        document.getElementById("totalPendente").textContent = moeda(pendente);
+
+        resumo.classList.remove("d-none");
+    }
+
+    function criarCartao(parcela) {
+        const card = criarElemento("article", "pagamento-card");
+
+        const cabecalho = criarElemento("div", "pagamento-cabecalho");
+        const identificacao = criarElemento("div");
+
+        identificacao.appendChild(
+            criarElemento("div", "pagamento-nome", parcela.usuarioNome)
+        );
+
+        identificacao.appendChild(
+            criarElemento(
+                "div",
+                "pagamento-detalhes",
+                `Cota ${parcela.numeroCota} · Parcela ${parcela.numeroParcela}`
+            )
+        );
+
+        identificacao.appendChild(
+            criarElemento(
+                "div",
+                "pagamento-detalhes",
+                `Vencimento: ${dataBR(parcela.dtVencimento)}`
+            )
+        );
+
+        const status = criarElemento("span", "status-pagamento");
+
+        if (parcela.situacao === "paga") {
+            status.classList.add("status-paga");
+            status.textContent = "Paga";
+        } else if (parcela.situacao === "atraso") {
+            status.classList.add("status-atraso");
+            status.textContent = "Em atraso";
+        } else {
+            status.classList.add("status-aberto");
+            status.textContent = "Em aberto";
+        }
+
+        cabecalho.append(identificacao, status);
+        card.appendChild(cabecalho);
+
+        card.appendChild(
+            criarElemento(
+                "div",
+                "fs-5 fw-bold mt-3",
+                moeda(parcela.valorDevido)
+            )
+        );
+
+        if (parcela.dtPagamento) {
+            card.appendChild(
+                criarElemento(
+                    "div",
+                    "text-success small mt-1",
+                    `Pago em ${dataBR(parcela.dtPagamento)}`
+                )
+            );
+        }
+
+        if (parcela.situacao !== "paga") {
+            const acoes = criarElemento("div", "pagamento-acoes");
+
+            const rotulo = criarElemento("label", "form-label mb-0");
+            rotulo.textContent = "Data do pagamento";
+
+            const data = document.createElement("input");
+            data.type = "date";
+            data.className = "form-control";
+            data.value = hoje;
+            data.max = hoje;
+            data.required = true;
+            data.setAttribute("aria-label", "Data do pagamento");
+
+            const grupoData = criarElemento("div", "flex-grow-1");
+            grupoData.append(rotulo, data);
+
+            const botao = criarElemento(
+                "button",
+                "btn-custom btn-custom-primary",
+                "Registrar pagamento"
+            );
+
+            botao.type = "button";
+
+            botao.addEventListener("click", async () => {
+                if (!data.value) {
+                    exibirMensagem(
+                        "Informe a data do pagamento.",
+                        true
+                    );
+                    data.focus();
+                    return;
+                }
+
+                if (data.value > hoje) {
+                    exibirMensagem(
+                        "A data do pagamento não pode ser futura.",
+                        true
+                    );
+                    return;
+                }
+
+                botao.disabled = true;
+
+                try {
+                    const resposta = await fetch(
+                        `${app.dataset.pagarUrl}/${parcela.id}/registrar`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+								[csrfHeader]: csrfToken
+                            },
+                            body: JSON.stringify({
+                                dataPagamento: data.value
+                            })
+                        }
+                    );
+
+                    const resultado = await resposta.json();
+
+                    if (!resposta.ok) {
+                        throw new Error(
+                            resultado.erro ||
+                            resultado.mensagem ||
+                            "Não foi possível registrar o pagamento."
+                        );
+                    }
+
+                    exibirMensagem(
+                        resultado.mensagem ||
+                        "Pagamento registrado com sucesso."
+                    );
+
+                    await carregarParcelas();
+
+                } catch (erro) {
+                    exibirMensagem(erro.message, true);
+                } finally {
+                    botao.disabled = false;
+                }
+            });
+
+            acoes.append(grupoData, botao);
+            card.appendChild(acoes);
+        }
+
+        return card;
+    }
+
+    async function carregarParcelas() {
+        if (!grupo.value || !mes.value) {
+            exibirMensagem(
+                "Selecione o grupo e o mês de vencimento.",
+                true
+            );
+            return;
+        }
+
+        consultar.disabled = true;
+        lista.replaceChildren();
+        resumo.classList.add("d-none");
+        exibirMensagem("Consultando parcelas...");
+
+        try {
+            const parametros = new URLSearchParams({
+                grupoId: grupo.value,
+                mes: mes.value
+            });
+
+            const resposta = await fetch(
+                `${app.dataset.listarUrl}?${parametros.toString()}`
+            );
+
+            const resultado = await resposta.json();
+
+            if (!resposta.ok) {
+                throw new Error(
+                    resultado.erro || "Erro ao consultar parcelas."
+                );
+            }
+
+            parcelasAtuais = resultado;
+
+            if (parcelasAtuais.length === 0) {
+                exibirMensagem(
+                    "Nenhuma parcela encontrada para este grupo e mês."
+                );
+                atualizarResumo();
+                return;
+            }
+
+            parcelasAtuais.forEach(parcela => {
+                lista.appendChild(criarCartao(parcela));
+            });
+
+            atualizarResumo();
+            exibirMensagem(
+                `${parcelasAtuais.length} parcela(s) encontrada(s).`
+            );
+
+        } catch (erro) {
+            console.error(erro);
+            exibirMensagem(erro.message, true);
+        } finally {
+            consultar.disabled = false;
+        }
+    }
+
+    consultar.addEventListener("click", carregarParcelas);
+
+    grupo.addEventListener("change", () => {
+        lista.replaceChildren();
+        resumo.classList.add("d-none");
+        parcelasAtuais = [];
+        exibirMensagem("");
+    });
+})();
+</script>
+
+</body>
+</html>

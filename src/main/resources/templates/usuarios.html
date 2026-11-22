@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cadastro de Usuários</title>
+
+	<!-- SEO Optimization -->
+	<meta name="description" content="Consorcio Sistema Manoel Santiago Pinheiro Neto Dev Java">
+	<meta name="author" content="Manoel Santiago Pinheiro Neto">
+
+	<!-- Favicon -->
+	<link rel="icon" th:href="@{/assets/images/favicon.ico}">
+
+
+	<!-- CSS -->
+	<link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/apexcharts/apexcharts.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/flatpickr/flatpickr.min.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/main.css}">
+
+
+</head>
+
+<body>
+
+	<!-- Inserir o menu aqui -->
+	<div id="menu" th:data-url="@{/fragments/menu}">
+	</div>
+	<!-- Inserir o menu aqui -->
+
+
+	<!-- ==========================================
+         START: Main Content Area
+         ========================================== -->
+	<div class="main-wrapper">
+
+
+		<!-- Inserir top nav bar -->
+		<div id="topnavbar" th:attr="data-url=@{/fragments/topnavbar}">
+		</div>
+		<!-- Inserir top nav bar -->
+
+
+		<!-- ==========================================
+  COMEÇAR A PÁGINA DAQUI
+   ========================================== -->
+
+
+		<!-- START: Main Layout Grid (2 Columns: Dashboard + Performance Pane) -->
+		<div class="row g-4">
+
+
+			<!-- TOP AREA: Quick Info Stat Cards Row (Full Width) -->
+
+
+
+
+			<div class="login-form-group">
+				<label for="nome" class="page-subtitle">Pesquisa Usuário</label>
+				<div class="login-input-group">
+					<i class="bi bi-question-circle input-icon"></i>
+					<input type="text" id="busca" class="login-input" placeholder="Nome ou CPF">
+				</div>
+			</div>
+
+			
+			
+			<div id="listaUsuarios" th:data-url="@{/api/usuario/listar}">
+				<p class="text-center">Carregando usuários...</p>
+			</div>
+
+			
+			
+			<div id="paginacao" class="d-flex justify-content-between align-items-center gap-2 mt-3">
+
+
+				<button type="button" id="btnAnterior" class="btn-custom btn-custom-secondary" disabled>
+					<i class="bi bi-chevron-left"></i>
+					Anterior
+				</button>
+
+				<span id="infoPagina" class="text-center">
+					Página 0 de 0
+				</span>
+
+				<button type="button" id="btnProxima" class="btn-custom btn-custom-secondary" disabled>
+					Próxima
+					<i class="bi bi-chevron-right"></i>
+				</button>
+			</div>
+			
+			
+			<div id="msg" class="mt-3" role="status"></div>
+			
+			
+
+		</div>
+
+		<div style="margin-top: 20px; margin-left: 20px;"><span style="font-size: 11px; color: rgb(128, 0, 64)"
+				id="msg"></span></div>
+
+
+
+		<!-- END: TOP AREA -->
+
+
+
+		<!-- FOOTER  -->
+		<footer class="footer-custom" style="margin-top: 45px;">
+			<div class="footer-left">
+				<span class="footer-logo">
+					<i class="bi bi-globe-americas"></i>
+					Lista de Usuários
+				</span>
+
+				<span class="footer-separator">|</span>
+
+				<span class="footer-copy">
+					&copy; 2026 Santiago Sistemas
+				</span>
+			</div>
+		</footer>
+		<!-- END: Footer Component -->
+
+	</div>
+
+	<!-- ==========================================
+         END: Main Content Area
+         ========================================== -->
+
+
+
+
+	<!-- Bibliotecas Script -->
+	<script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+	<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+	<script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+
+	<!-- Biblioteca dashboard  -->
+	<script th:src="@{/assets/js/dashboard.js}"></script>
+	
+	<!-- Biblioteca da busca de usuários -->
+	<script th:src="@{/assets/js/usuarios.js}"></script>
+
+	<!-- SCRIPT DOS MENUS -->
+	<script th:inline="javascript">
+		$(document).ready(function () {
+
+			const menuUrl = $("#menu").attr("data-url");
+			const navbarUrl = $("#topnavbar").attr("data-url");
+
+			$("#menu").load(menuUrl, function (response, status, xhr) {
+				if (status === "error") {
+					console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+				}
+			});
+
+			$("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+				if (status === "error") {
+					console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+				}
+			});
+
+		});
+	</script>
+	<!-- SCRIPT DOS MENUS -->
+
+	<script>
+		
+		function editarUsuario(id){
+			window.location.href = '/usuario/'+id;
+		}
+		
+		
+	</script>
+
+</body>
+
+</html>

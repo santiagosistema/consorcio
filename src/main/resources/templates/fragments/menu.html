@@ -1,0 +1,123 @@
+<!-- ==========================================
+         START: Sidebar Component
+         Highly polished, dark-green sticky navigation
+         ========================================== -->
+<div class="sidebar-wrapper d-flex flex-column" id="sidebar">
+	<!-- Brand Logo / Identity -->
+	<a th:href="@{/home}" class="sidebar-brand">
+		<i class="bi bi-tree"></i>
+		<span style="font-size: 15px;">Consórcio Pinheiro$</span>
+	</a>
+
+	<!-- Navigation Menu -->
+	<div class="flex-grow-1 overflow-y-auto">
+		<!-- Group: Menu -->
+		<div class="sidebar-menu-section">
+			<div class="sidebar-menu-title">Menu</div>
+			<ul class="sidebar-menu-list">
+				<li class="sidebar-menu-item">
+					<a th:href="@{/home}" class="sidebar-menu-link active" id="menu-overview" title="Overview">
+						<i class="bi bi-grid-fill"></i>
+						<span>Início</span>
+					</a>
+				</li>
+				<li class="sidebar-menu-item">
+					<a th:href="@{/grupo/visao-geral}" class="sidebar-menu-link active" id="menu-overview" title="Overview">
+						<i class="bi bi-window-dock"></i>
+						<span>Consórcio</span>
+					</a>
+				</li>
+				<li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item">
+					<a th:href="@{/pagamento}" class="sidebar-menu-link active" id="menu-overview" title="Overview">
+						<i class="bi bi-columns-gap"></i>
+						<span>Registra pagamentos</span>
+					</a>
+				</li>
+				<li class="sidebar-menu-item">
+					<a th:href="@{/parcelas}" class="sidebar-menu-link active" id="menu-overview" title="Overview">
+						<i class="bi bi-cash-coin"></i>
+						<span>Extrato financeiro</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+
+
+		<!-- Group: Pages -->
+		<div class="sidebar-menu-section">
+			<div class="sidebar-menu-title">Cadastro</div>
+			<ul class="sidebar-menu-list">
+
+				<li class="sidebar-menu-item">
+					<a th:href="@{/user}" class="sidebar-menu-link" id="menu-loginpage" title="Login Page">
+						<i class="bi bi-person-vcard"></i>
+						<span>Usuários</span>
+					</a>
+				</li>
+				<li class="sidebar-menu-item">
+					<a th:href="@{/grupo}" class="sidebar-menu-link" id="menu-404" title="404 Page">
+						<i class="bi bi-puzzle"></i></i>
+						<span>Grupo</span>
+					</a>
+				</li>
+				<li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item">
+					<a th:href="@{/cotas/consultar}" class="sidebar-menu-link" id="menu-404" title="404 Page">
+						<i class="bi bi-infinity"></i>
+						<span>Contemplar Cotas</span>
+					</a>
+				</li>
+				<!-- BOTÃO SORTEIO
+				<li class="sidebar-menu-item">
+					<a th:href="@{/home}" class="sidebar-menu-link" id="menu-404" title="404 Page">
+						<i class="bi bi-dice-5"></i>
+						<span>Sorteio</span>
+					</a>
+				</li>
+				-->
+			</ul>
+		</div>
+	</div>
+
+	
+	<!-- Usuário logado: rodapé do menu -->
+	<div class="mt-auto p-3 border-top border-secondary text-white">
+
+	    <div class="d-flex align-items-center gap-3">
+
+	        <i class="bi bi-person-circle fs-2"></i>
+
+	        <div class="overflow-hidden">
+	            <div class="fw-semibold text-truncate"
+	                 th:text="${usuarioLogado != null ? usuarioLogado.nome : 'Usuário'}">
+	                Nome do usuário
+	            </div>
+
+	            <small class="text-white-50"
+	                   th:text="${usuarioLogado != null
+	                       ? (usuarioLogado.administrador
+	                           ? 'Administrador'
+	                           : 'Usuário comum')
+	                       : ''}">
+	                Perfil
+	            </small>
+				<form th:action="@{/logout}" method="post" class="m-0">
+				    <button type="submit"
+				            class="btn btn-link p-0 text-white-50 text-decoration-none"
+				            style="font-size: 12px; color: blue;">
+				        Sair
+				    </button>
+				</form>
+
+	        </div>
+
+	    </div>
+
+	</div>
+	
+	
+</div>
+<!-- ==========================================
+         END: Sidebar Component
+         ========================================== -->
+		 
+		

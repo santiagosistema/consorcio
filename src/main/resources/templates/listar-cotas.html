@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar distribuição de cotas</title>
+    <link rel="icon" th:href="@{/assets/images/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+	
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+	
+	
+    <style>
+        .resumo-card { border: 1px solid #e5e7eb; border-radius: 14px; background: #fff; padding: 18px; height: 100%; }
+        .resumo-icone { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: #eef2ff; color: #3446a8; font-size: 1.25rem; }
+        .cota-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+        .cota-topo { padding: 15px 17px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .cota-numero { font-size: 1.05rem; font-weight: 750; margin: 0; }
+        .participante { padding: 14px 17px; border-bottom: 1px solid #f0f1f3; }
+        .participante:last-child { border-bottom: 0; }
+        .nome-participante { font-weight: 650; overflow-wrap: anywhere; }
+        .percentual { font-weight: 700; white-space: nowrap; }
+        .barra-fundo { height: 7px; border-radius: 20px; background: #e9ecef; overflow: hidden; margin-top: 9px; }
+        .barra-percentual { height: 100%; background: #198754; border-radius: 20px; }
+        .filtros { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 220px); gap: 12px; }
+        .estado-vazio { text-align: center; padding: 38px 18px; color: #6c757d; border: 1px dashed #ced4da; border-radius: 12px; background: #fff; }
+        .estado-vazio i { font-size: 2rem; display: block; margin-bottom: 10px; }
+        @media (max-width: 576px) {
+            .filtros { grid-template-columns: 1fr; }
+            .resumo-card { padding: 14px; }
+            .cota-topo, .participante { padding: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="menu" th:data-url="@{/fragments/menu}"></div>
+    <div class="main-wrapper">
+        <div id="topnavbar" th:attr="data-url=@{/fragments/topnavbar}"></div>
+        <div class="container-fluid py-3">
+            <div class="card border-light shadow-sm p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <h4 class="card-title mb-2"><i class="bi bi-diagram-3 me-2"></i>Distribuição de cotas</h4>
+                        <p class="text-muted mb-0">Consulte os participantes e os percentuais de cada cota do grupo.</p>
+                    </div>
+                    <a class="btn-custom btn-custom-secondary text-decoration-none" th:href="@{/cota}">
+                        <i class="bi bi-arrow-left me-2"></i>Voltar à distribuição
+                    </a>
+                </div>
+
+                <div class="mb-4">
+                    <label for="grupo" class="form-label-custom">Grupo do consórcio</label>
+                    <select class="form-select-custom" id="grupo" name="grupo" required
+                            th:attr="data-url=@{/api/grupo}, data-distribuicao-url=@{/api/cota/grupo}, data-situacao-url=@{/api/cota}">
+                        <option value="" selected disabled>Selecione um grupo...</option>
+                        <option th:each="grupo : ${grupos}"
+                                th:value="${grupo.id}"
+                                th:text="${grupo.nomeGrupo}"></option>
+                    </select>
+                </div>
+
+                <div id="painelResumo" class="row g-3 mb-4 d-none">
+                    <div class="col-12 col-md-4">
+                        <div class="resumo-card d-flex align-items-center gap-3">
+                            <div class="resumo-icone"><i class="bi bi-grid-3x3-gap"></i></div>
+                            <div><div class="text-muted small">Cotas distribuídas</div><div id="totalCotas" class="fs-4 fw-bold">0</div></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="resumo-card d-flex align-items-center gap-3">
+                            <div class="resumo-icone"><i class="bi bi-people"></i></div>
+                            <div><div class="text-muted small">Participações cadastradas</div><div id="totalParticipacoes" class="fs-4 fw-bold">0</div></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="resumo-card d-flex align-items-center gap-3">
+                            <div class="resumo-icone"><i class="bi bi-person-check"></i></div>
+                            <div><div class="text-muted small">Participantes únicos</div><div id="totalUsuarios" class="fs-4 fw-bold">0</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="areaDistribuicao" class="d-none">
+                    <div class="filtros mb-3">
+                        <div>
+                            <label for="buscaCota" class="form-label">Buscar cota ou participante</label>
+                            <input type="search" class="form-control" id="buscaCota" placeholder="Ex.: cota 12 ou nome do usuário">
+                        </div>
+                        <div>
+                            <label for="filtroParticipacao" class="form-label">Filtrar por participação</label>
+                            <select id="filtroParticipacao" class="form-select">
+                                <option value="todas">Todas as cotas</option>
+                                <option value="compartilhadas">Cotas compartilhadas</option>
+                                <option value="individual">Cotas individuais</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <h5 class="mb-0">Cotas do grupo</h5>
+                        <span id="contadorResultado" class="badge text-bg-secondary">0 cotas</span>
+                    </div>
+                    <div id="listaCotas"></div>
+                </div>
+
+                <div id="estadoInicial" class="estado-vazio">
+                    <i class="bi bi-hand-index-thumb"></i>
+                    <strong>Selecione um grupo</strong>
+                    <div class="small mt-1">A distribuição cadastrada será exibida nesta página.</div>
+                </div>
+                <div id="mensagem" class="mt-3" role="status" aria-live="polite"></div>
+            </div>
+        </div>
+        <footer class="footer-custom" style="margin-top:45px">
+            <div class="footer-left">
+                <span class="footer-logo"><i class="bi bi-radioactive"></i> Divisão de Cotas</span>
+                <span class="footer-separator">|</span>
+                <span class="footer-copy">&copy; 2026 Santiago Sistemas</span>
+            </div>
+        </footer>
+    </div>
+
+    <script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+    <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/dashboard.js}"></script>
+		<script th:src="@{/assets/js/notification.js}"></script>
+    <script>
+        $(function () {
+            $("#menu").load($("#menu").attr("data-url"));
+            $("#topnavbar").load($("#topnavbar").attr("data-url"));
+        });
+    </script>
+	
+	
+	<!-- SCRIPT GERAL  -->
+    <script>
+		const csrfToken =
+		    document.querySelector('meta[name="_csrf"]')?.content;
+
+		const csrfHeader =
+		    document.querySelector('meta[name="_csrf_header"]')?.content;
+			
+        (() => {
+            "use strict";
+
+            const grupoSelect = document.getElementById("grupo");
+            const painelResumo = document.getElementById("painelResumo");
+            const areaDistribuicao = document.getElementById("areaDistribuicao");
+            const estadoInicial = document.getElementById("estadoInicial");
+            const listaCotas = document.getElementById("listaCotas");
+            const mensagem = document.getElementById("mensagem");
+            const buscaCota = document.getElementById("buscaCota");
+            const filtroParticipacao = document.getElementById("filtroParticipacao");
+            let distribuicaoAtual = [];
+            let requisicaoAtual = 0;
+
+            function avisar(texto, erro = false) {
+                mensagem.textContent = texto || "";
+                mensagem.className = "mt-3 " + (erro ? "text-danger" : "text-success");
+            }
+
+            function esconderResultados() {
+                painelResumo.classList.add("d-none");
+                areaDistribuicao.classList.add("d-none");
+                listaCotas.replaceChildren();
+                distribuicaoAtual = [];
+            }
+
+            function nomeGrupoSelecionado() {
+                return grupoSelect.options[grupoSelect.selectedIndex]?.text || "Grupo";
+            }
+
+            function percentualFormatado(valor) {
+                const n = Number(valor);
+                return Number.isFinite(n)
+                    ? n.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "%"
+                    : "—";
+            }
+
+            function obterParticipantes(cota) {
+                return Array.isArray(cota.participantes) ? cota.participantes : [];
+            }
+
+            function desenharCota(cota) {
+                const participantes = obterParticipantes(cota);
+                const card = document.createElement("article");
+                card.className = "cota-card";
+
+                const topo = document.createElement("div");
+                topo.className = "cota-topo";
+                const titulo = document.createElement("h6");
+                titulo.className = "cota-numero";
+                titulo.textContent = "Cota nº " + (cota.numeroCota ?? "—");
+                const badge = document.createElement("span");
+                badge.className = "badge " + (participantes.length > 1 ? "text-bg-primary" : "text-bg-success");
+                badge.textContent = participantes.length > 1 ? participantes.length + " participantes" : "Individual";
+                topo.append(titulo, badge);
+                card.appendChild(topo);
+				
+				// Situação individual da cota
+				const areaSituacao = document.createElement("div");
+				areaSituacao.className =
+				    "px-3 py-3 d-flex flex-wrap align-items-center gap-2";
+
+				const labelSituacao = document.createElement("label");
+				labelSituacao.className = "form-label mb-0 me-1";
+				labelSituacao.textContent = "Situação:";
+
+				const selectSituacao = document.createElement("select");
+				selectSituacao.className = "form-select";
+				selectSituacao.style.maxWidth = "190px";
+
+				[
+				    { valor: "ATIVA", texto: "Ativa" },
+				    { valor: "CONTEMPLADA", texto: "Contemplada" },
+				    { valor: "CANCELADA", texto: "Cancelada" }
+				].forEach(opcao => {
+				    const option = document.createElement("option");
+				    option.value = opcao.valor;
+				    option.textContent = opcao.texto;
+				    selectSituacao.appendChild(option);
+				});
+
+				selectSituacao.value = (cota.situacaoCota || "ATIVA").toUpperCase();
+				
+				const cotaContemplada = cota.situacaoCota == "CONTEMPLADA";
+
+				selectSituacao.disabled = cotaContemplada;
+
+				const botaoSalvar = document.createElement("button");
+				botaoSalvar.type = "button";
+				botaoSalvar.className = "btn btn-primary btn-sm";
+				botaoSalvar.innerHTML =
+				    '<i class="bi bi-check-circle me-1"></i>Salvar situação';
+
+				botaoSalvar.addEventListener("click", async () => {
+				    const situacaoAnterior = cota.situacaoCota;
+				    const novaSituacao = selectSituacao.value;
+
+				    botaoSalvar.disabled = true;
+				    selectSituacao.disabled = true;
+				    botaoSalvar.textContent = "Salvando...";
+
+				    try {
+				        const resposta = await fetch(
+				            `${grupoSelect.dataset.situacaoUrl}/${encodeURIComponent(cota.id)}/situacao`,
+				            {
+				                method: "PUT",
+				                headers: {
+				                    "Content-Type": "application/json",
+				                    "Accept": "application/json",
+									[csrfHeader]: csrfToken
+				                },
+				                body: JSON.stringify({
+				                    situacaoCota: novaSituacao
+				                })
+				            }
+				        );
+
+				        if (!resposta.ok) {
+				            const detalhe = await resposta.text();
+				            throw new Error(
+				                detalhe || "Não foi possível salvar a situação."
+				            );
+				        }
+
+				        const dadosSalvos = await resposta.json();
+
+				        // Atualiza somente esta cota na lista exibida
+				        cota.situacaoCota = dadosSalvos.situacaoCota;
+
+				        avisar(
+				            `Situação da cota nº ${cota.numeroCota} salva com sucesso.`
+				        );
+
+				        botaoSalvar.innerHTML =
+				            '<i class="bi bi-check-circle me-1"></i>Salvo!';
+				    } catch (erro) {
+				        cota.situacaoCota = situacaoAnterior;
+				        selectSituacao.value = situacaoAnterior || "ATIVA";
+				        avisar(erro.message, true);
+				        botaoSalvar.innerHTML =
+				            '<i class="bi bi-check-circle me-1"></i>Salvar situação';
+				    } finally {
+				        botaoSalvar.disabled = false;
+				        selectSituacao.disabled = false;
+				    }
+				});
+
+				areaSituacao.append(labelSituacao, selectSituacao);
+
+				if (cotaContemplada) {
+				    const aviso = document.createElement("span");
+				    aviso.className = "badge text-bg-success";
+				    aviso.innerHTML = '<i class="bi bi-trophy-fill me-1"></i>Cota contemplada — edição bloqueada';
+				    areaSituacao.appendChild(aviso);
+				} else {
+				    areaSituacao.appendChild(botaoSalvar);
+				}
+
+				card.appendChild(areaSituacao);
+
+                if (!participantes.length) {
+                    const vazio = document.createElement("div");
+                    vazio.className = "participante text-muted";
+                    vazio.textContent = "Nenhum participante informado para esta cota.";
+                    card.appendChild(vazio);
+                } else {
+                    participantes.forEach(p => {
+                        const linha = document.createElement("div");
+                        linha.className = "participante";
+                        const primeiraLinha = document.createElement("div");
+                        primeiraLinha.className = "d-flex justify-content-between align-items-start gap-3";
+                        const nome = document.createElement("div");
+                        nome.className = "nome-participante";
+                        nome.textContent = p.nome ?? p.nomeUsuario ?? ("Usuário " + (p.usuarioId ?? p.idUsuario ?? ""));
+                        const percentual = document.createElement("span");
+                        percentual.className = "percentual";
+                        percentual.textContent = percentualFormatado(p.percentual);
+                        primeiraLinha.append(nome, percentual);
+                        const fundo = document.createElement("div");
+                        fundo.className = "barra-fundo";
+                        const barra = document.createElement("div");
+                        barra.className = "barra-percentual";
+                        const valor = Number(p.percentual);
+                        barra.style.width = (Number.isFinite(valor) ? Math.min(100, Math.max(0, valor)) : 0) + "%";
+                        fundo.appendChild(barra);
+                        linha.append(primeiraLinha, fundo);
+                        card.appendChild(linha);
+                    });
+                }
+                return card;
+            }
+
+            function aplicarFiltros() {
+                const termo = buscaCota.value.trim().toLocaleLowerCase("pt-BR");
+                const modo = filtroParticipacao.value;
+                const filtradas = distribuicaoAtual.filter(cota => {
+                    const participantes = obterParticipantes(cota);
+                    if (modo === "compartilhadas" && participantes.length < 2) return false;
+                    if (modo === "individual" && participantes.length !== 1) return false;
+                    if (!termo) return true;
+                    const numero = String(cota.numeroCota ?? "").toLocaleLowerCase("pt-BR");
+                    const nomes = participantes.map(p => p.nome ?? p.nomeUsuario ?? "").join(" ").toLocaleLowerCase("pt-BR");
+                    return numero.includes(termo) || nomes.includes(termo);
+                });
+
+                listaCotas.replaceChildren();
+                if (!filtradas.length) {
+                    const vazio = document.createElement("div");
+                    vazio.className = "estado-vazio";
+                    vazio.innerHTML = '<i class="bi bi-search"></i><strong>Nenhuma cota encontrada</strong><div class="small mt-1">Tente alterar os filtros da consulta.</div>';
+                    listaCotas.appendChild(vazio);
+                } else {
+                    filtradas.sort((a, b) => Number(a.numeroCota) - Number(b.numeroCota));
+                    filtradas.forEach(cota => listaCotas.appendChild(desenharCota(cota)));
+                }
+                document.getElementById("contadorResultado").textContent =
+                    filtradas.length + (filtradas.length === 1 ? " cota" : " cotas");
+            }
+
+            function atualizarResumo(cotas) {
+                const participacoes = cotas.reduce((soma, cota) => soma + obterParticipantes(cota).length, 0);
+                const usuarios = new Set();
+                cotas.forEach(cota => obterParticipantes(cota).forEach(p => {
+                    const id = p.usuarioId ?? p.idUsuario ?? p.id;
+                    const nome = p.nome ?? p.nomeUsuario;
+                    if (id != null) usuarios.add(String(id));
+                    else if (nome) usuarios.add(nome);
+                }));
+                document.getElementById("totalCotas").textContent = cotas.length;
+                document.getElementById("totalParticipacoes").textContent = participacoes;
+                document.getElementById("totalUsuarios").textContent = usuarios.size;
+            }
+
+            grupoSelect.addEventListener("change", async () => {
+                const id = ++requisicaoAtual;
+                const grupoId = grupoSelect.value;
+                esconderResultados();
+                estadoInicial.classList.add("d-none");
+                avisar("Carregando distribuição do grupo...");
+                grupoSelect.disabled = true;
+
+                try {
+                    /*
+                     * Este GET precisa existir no backend e retornar JSON no formato:
+                     * [
+                     *   { "numeroCota": 1, "participantes": [
+                     *     { "usuarioId": 10, "nome": "Nome", "percentual": 50.00 }
+                     *   ]}
+                     * ]
+                     */
+                    const url = `${grupoSelect.dataset.distribuicaoUrl}/${encodeURIComponent(grupoId)}/distribuicao`;
+                    const resposta = await fetch(url, { headers: { "Accept": "application/json" } });
+                    if (!resposta.ok) {
+                        const detalhe = await resposta.text();
+                        throw new Error(detalhe || `Não foi possível consultar a distribuição (HTTP ${resposta.status}).`);
+                    }
+                    const dados = await resposta.json();
+                    if (id !== requisicaoAtual) return;
+                    if (!Array.isArray(dados)) throw new Error("A resposta da API não está no formato esperado.");
+                    distribuicaoAtual = dados;
+                    atualizarResumo(dados);
+                    painelResumo.classList.remove("d-none");
+                    areaDistribuicao.classList.remove("d-none");
+                    aplicarFiltros();
+                    avisar(dados.length
+                        ? `Distribuição carregada: ${nomeGrupoSelecionado()}.`
+                        : "Este grupo ainda não possui cotas distribuídas.");
+                } catch (erro) {
+                    if (id !== requisicaoAtual) return;
+                    console.error("Erro ao consultar distribuição:", erro);
+                    avisar(erro.message || "Erro ao consultar a distribuição.", true);
+                    estadoInicial.classList.remove("d-none");
+                    estadoInicial.querySelector("strong").textContent = "Não foi possível carregar";
+                    estadoInicial.querySelector(".small").textContent = "Verifique se o endpoint de consulta da distribuição está implementado no backend.";
+                } finally {
+                    if (id === requisicaoAtual) grupoSelect.disabled = false;
+                }
+            });
+
+            buscaCota.addEventListener("input", aplicarFiltros);
+            filtroParticipacao.addEventListener("change", aplicarFiltros);
+        })();
+    </script>
+</body>
+</html>

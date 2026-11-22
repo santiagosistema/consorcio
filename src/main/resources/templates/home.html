@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consorcio Família Pinheiro</title>
+
+  <!-- SEO Optimization -->
+  <meta name="description" content="Consorcio Sistema Manoel Santiago Pinheiro Neto Dev Java">
+  <meta name="author" content="Manoel Santiago Pinheiro Neto">
+
+  <!-- Favicon -->
+  <link rel="icon" th:href="@{/assets/images/favicon.ico}">
+
+
+  <!-- CSS -->
+  <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+  <link rel="stylesheet" th:href="@{/assets/libs/apexcharts/apexcharts.css}">
+  <link rel="stylesheet" th:href="@{/assets/libs/flatpickr/flatpickr.min.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+</head>
+
+<body>
+
+
+  <!-- Inserir o menu aqui -->
+  <div id="menu"
+	   th:attr="data-url=@{/fragments/menu}">
+  </div>
+  <!-- Inserir o menu aqui -->
+
+
+  <!-- ==========================================
+         START: Main Content Area
+         ========================================== -->
+  <div class="main-wrapper">
+
+	
+   <!-- Inserir top nav bar -->
+   <div id="topnavbar"
+        th:attr="data-url=@{/fragments/topnavbar}">
+   </div>
+   <!-- Inserir top nav bar -->
+	
+	
+
+    <!-- START: Dashboard Header Banner -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Consórcio Família Pinheiro</h1>
+        <p class="page-subtitle">Sistema de gestão do consórcio familiar.</p>
+      </div>
+      <span class="stat-label">Manoel Santiago Pinheiro Neto
+      </span>
+    </div>
+    <!-- END: Dashboard Header Banner -->
+
+    <!-- START: Main Layout Grid (2 Columns: Dashboard + Performance Pane) -->
+    <div class="row g-4">
+
+		
+      <!-- TOP AREA: Quick Info Stat Cards Row (Full Width) -->
+      <div class="col-12">
+        <div class="row g-4">
+          
+
+			
+          <!-- Stat Card: Net Income -->
+          <div class="col-md-4">
+            <div class="polaroid">
+			<img th:src="@{/assets/images/familia_capa.png}" alt="Família reunida">
+            </div>
+          </div>
+
+         
+		  
+		  
+        </div>
+      </div>
+      <!-- END: TOP AREA -->
+
+     
+
+    <!-- START: Footer Component -->
+    <footer class="footer-custom" style="margin-top: 45px;">
+      <div class="footer-left">
+        <span class="footer-logo">
+          <i class="bi bi-floppy"></i> <a href="mailto:mspneto10@outlook.com"> Manoel Santiago admin</a>
+        </span>
+        <span class="footer-separator">|</span>
+        <span class="footer-copy">&copy; 2026 por <i class="bi bi-heart-fill text-danger footer-heart"></i> <a href="mailto:mspneto10@outlook.com">Santiago Sistemas</a>  •  Distribuição para uso pessoal. </span>
+      </div>
+    </footer>
+    <!-- END: Footer Component -->
+
+  </div>
+  
+  <!-- ==========================================
+         END: Main Content Area
+         ========================================== -->
+
+		 
+
+		 
+  <!-- Bibliotecas Script -->
+  <script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+  <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+  <script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+  <script th:src="@{/assets/js/notification.js}"></script>
+
+  <!-- Biblioteca dashboard  -->
+  <script th:src="@{/assets/js/dashboard.js}"></script>
+  
+  
+  <script th:inline="javascript">
+      $(document).ready(function () {
+
+          const menuUrl = $("#menu").attr("data-url");
+          const navbarUrl = $("#topnavbar").attr("data-url");
+
+          $("#menu").load(menuUrl, function (response, status, xhr) {
+              if (status === "error") {
+                  console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+              }
+          });
+
+          $("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+              if (status === "error") {
+                  console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+              }
+          });
+
+      });
+	  
+	  
+	  /* envia o CSRF */
+	  function obterHeadersCSRF() {
+	      const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+	      const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+	      const headers = {
+	          "Content-Type": "application/json"
+	      };
+
+	      if (csrfToken && csrfHeader) {
+	          headers[csrfHeader] = csrfToken;
+	      }
+
+	      return headers;
+	  }
+  </script>
+  </body>
+  </html>
+
+  
+</body>
+
+</html>

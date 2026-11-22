@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dados do Grupo</title>
+
+	<!-- SEO Optimization -->
+	<meta name="description" content="Consorcio Sistema Manoel Santiago Pinheiro Neto Dev Java">
+	<meta name="author" content="Manoel Santiago Pinheiro Neto">
+
+	<!-- Favicon -->
+	<link rel="icon" th:href="@{/assets/images/favicon.ico}">
+
+
+	<!-- CSS -->
+	<link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/apexcharts/apexcharts.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/flatpickr/flatpickr.min.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/main.css}">
+	
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+
+</head>
+
+<body>
+
+	<!-- Inserir o menu aqui -->
+	<div id="menu" th:data-url="@{/fragments/menu}">
+	</div>
+	<!-- Inserir o menu aqui -->
+
+
+	<!-- ==========================================
+         START: Main Content Area
+         ========================================== -->
+	<div class="main-wrapper">
+
+
+		<!-- Inserir top nav bar -->
+		<div id="topnavbar" th:attr="data-url=@{/fragments/topnavbar}">
+		</div>
+		<!-- Inserir top nav bar -->
+
+
+		<!-- ==========================================
+  COMEÇAR A PÁGINA DAQUI
+   ========================================== -->
+
+
+		<!-- START: Main Layout Grid (2 Columns: Dashboard + Performance Pane) -->
+		<div class="row g-4">
+
+
+			<!-- TOP AREA: Quick Info Stat Cards Row (Full Width) -->
+
+			<!-- Login Form -->
+			<div class="card border-light shadow-sm p-4 h-100">
+
+				<h5 class="card-title mb-4">Dados do Grupo</h5>
+
+				<form id="grupoForm" class="needs-validation" novalidate>
+
+					<!-- codigo do usuario -->
+					
+					<div class="login-form-group" id="divId"
+							th:style="${grupo.id != null && grupo.id > 0} ? 'display:block' : 'display:none'">
+						<label for="id" class="login-form-label">Código do Grupo:</label>
+						<div class="login-input-group">
+							<i class="bi bi-database input-icon"></i>
+							<input type="text" id="id" class="login-input" th:value="${grupo.id ?: ''}"
+								readonly>
+						</div>
+					</div>
+
+
+
+
+					<div class="login-form-group">
+						<label for="nome" class="login-form-label">Nome Grupo</label>
+						<div class="login-input-group">
+							<i class="bi bi-pencil-square input-icon"></i>
+							<input type="text" id="nomeGrupo" class="login-input" placeholder="nome grupo" th:value="${grupo.nomeGrupo ?: ''}"
+								required>
+						</div>
+					</div>
+
+
+					<div class="login-form-group">
+						<label for="cpf" class="login-form-label">Valor da Cota</label>
+						<div class="login-input-group">
+							<i class="bi bi-cash input-icon"></i>
+							<input type="text" inputmode="numeric" maxlength="14" id="valorCota"
+								class="login-input" placeholder="R$" th:disabled="${grupo.id > 0}" 
+								th:value="${grupo.valorCota > 0 ? #numbers.formatDecimal(grupo.valorCota, 1, 'POINT', 2, 'COMMA') : '0,00'}"
+								 required>
+						</div>
+					</div>
+
+
+					<div class="login-form-group">
+						<label for="prazo" class="login-form-label">Total de cotas</label>
+						<div class="login-input-group">
+							<i class="bi bi-yin-yang input-icon"></i>
+							<input type="number" inputmode="numeric" id="totalCotas" class="login-input"
+								 th:value="${grupo.totalCotas > 0 ? grupo.totalCotas : ''}" th:disabled="${grupo.id > 0}" required>
+						</div>
+					</div>
+
+					
+					
+					<div class="login-form-group" id="divDataInicio">
+						<label for="email" class="login-form-label">Data de Início</label>
+						<div class="login-input-group"> 
+							<i class="bi bi-calendar2 input-icon"></i>
+							<input type="date" id="dataInicio" class="login-input"
+								th:value="${#temporals.format(grupo.dataInicio, 'yyyy-MM-dd') ?: ''}" th:disabled="${grupo.id > 0}">
+						</div>
+					</div>
+					
+					<div class="login-form-group" id="divDataFim" th:style="${grupo.dataFim != null} ? 'display:block' : 'display:none'">
+						<label for="email" class="login-form-label">Data Fim</label>
+						<div class="login-input-group"> 
+							<i class="bi bi-calendar2 input-icon"></i>
+							<input type="date" id="dataFim" class="login-input" disabled
+								th:value="${#temporals.format(grupo.dataFim, 'yyyy-MM-dd') ?: ''}">
+						</div>
+					</div>
+
+					<!-- Situação selected -->
+					<div class="mb-3">
+					  <label for="selectControl" class="form-label-custom">Situação</label>
+					  <select class="form-select-custom" id="situacao" required th:disabled="${#authorization.expression('hasRole(''USER'')')}">
+						<option value="" disabled selected>-</option>
+					    <option value="ativo" th:selected="${grupo.situacao == 'ativo'}">Ativo</option>
+					    <option value="encerrado" id="optEncerrado" th:selected="${grupo.situacao == 'encerrado'}" th:disabled="${grupo.id == null || grupo.id == 0}">Encerrado</option>
+					    <option value="cancelado" id="optCancelado" th:selected="${grupo.situacao == 'cancelado'}" th:disabled="${grupo.id == null || grupo.id == 0}">Cancelado</option>
+					  </select>
+					</div>
+					
+					
+					
+					<div class="login-form-group" id="divDataSituacao" 
+						th:style="${grupo.dataSituacao != null} ? 'display:block' : 'display:none'">
+						<label for="dataSituacao" class="login-form-label">Data da Situação</label>
+						<div class="login-input-group"> 
+							<i class="bi bi-calendar2 input-icon"></i>
+							<input type="date" id="dataSituacao" class="login-input" disabled
+								 th:value="${grupo.dataSituacao}">
+						</div>
+					</div>
+					
+					
+					
+					<!-- Submit Button -->
+					<div>
+						<button sec:authorize="hasRole('ADMIN')" style="margin-top: 20px;" type="submit" class="btn-custom btn-custom-primary"
+							id="btn-salvar">
+							<i class="bi bi-floppy"></i>
+							<span>Salvar</span>
+						</button>
+						
+						<button class="btn-custom btn-custom-secondary" style="margin-left: 10px;" type="button" onclick="window.location.href='/grupo/selecionar-grupo'">Listar Grupos<i class="bi bi-person-up"></i></button>
+						
+						<button sec:authorize="hasRole('ADMIN')" class="btn-custom btn-custom-light" style="margin-left: 10px;" type="button" onclick="limpar()">
+						  Novo<i class="bi bi-three-dots"></i>
+						</button>
+						<button sec:authorize="hasRole('ADMIN')" class="btn-custom btn-custom-warning" style="margin-left:10px" id="btnDistribuirCotas" 
+							onclick="distribuirCotas()" type="button">Distribuir cotas</button>
+					</div>
+					<div style="margin-top: 20px; margin-left: 20px;"><span
+							style="font-size: 11px; color: rgb(0, 64, 0)" id="msg"></span></div>
+
+				</form>
+			</div>
+
+
+			<!-- END: TOP AREA -->
+
+
+			<!-- FOOTER  -->
+			<footer class="footer-custom" style="margin-top: 45px;">
+			    <div class="footer-left">
+			        <span class="footer-logo">
+			            <i class="bi bi-person-arms-up"></i>
+			            Controle de Grupos
+			        </span>
+
+			        <span class="footer-separator">|</span>
+
+			        <span class="footer-copy">
+			            &copy; 2026 Santiago Sistemas
+			        </span>
+			    </div>
+			</footer>
+			<!-- END: Footer Component -->
+
+		</div>
+
+		<!-- ==========================================
+         END: Main Content Area
+         ========================================== -->
+
+
+
+
+<!-- Bibliotecas Script -->
+<script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+<script th:src="@{/assets/js/notification.js}"></script>
+
+<!-- Biblioteca dashboard  -->
+<script th:src="@{/assets/js/dashboard.js}"></script>
+
+<!-- SCRIPT DOS MENUS -->
+<script th:inline="javascript">
+	$(document).ready(function () {
+
+		const menuUrl = $("#menu").attr("data-url");
+		const navbarUrl = $("#topnavbar").attr("data-url");
+
+		$("#menu").load(menuUrl, function (response, status, xhr) {
+			if (status === "error") {
+				console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+			}
+		});
+
+		$("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+			if (status === "error") {
+				console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+			}
+		});
+
+	});
+</script>
+<!-- SCRIPT DOS MENUS -->
+
+
+
+<script th:inline="javascript">
+
+
+// Botao Distribuir Cotas
+const botaoCota = document.getElementById("btnDistribuirCotas");
+
+
+function distribuirCotas(){
+	
+const idgrupo = document.getElementById("id").value;
+
+	if(idgrupo > 0 ){
+		//let urlBase = /*[[@{/api/cota/grupo/}]]*/ '';
+		//let url = `${urlBase}${idgrupo}/distribuicao`;
+		
+		let url = /*[[@{/cota}]]*/ '';
+		window.location.href = url;
+	}
+}
+
+
+function controlarBotaCota(){
+	
+	const idgrupo = document.getElementById("id").value;
+
+	if(idgrupo == 0 || idgrupo == null){
+		botaoCota.disabled = true;
+		botaoCota.className = 'btn-custom btn-custom-light'
+		botaoCota.innerText = '---';
+	}else {
+	
+		botaoCota.disabled = false;
+		botaoCota.className = 'btn-custom btn-custom-warning';
+		botaoCota.innerText = 'Distribuir cotas';
+		
+	}
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+	controlarBotaCota();
+});
+
+
+
+
+
+
+	
+// CONTROLAR O BOTÃO SALVAR
+function controlarBotaoSalvar() {
+    const situacao = document.getElementById("situacao").value;
+    const botaoSalvar = document.getElementById("btn-salvar");
+
+    const encerrado = situacao === "encerrado";
+	const cancelado = situacao ==='cancelado';
+
+	if(encerrado){
+    	botaoSalvar.disabled = encerrado;
+	}else if(cancelado){
+		botaoSalvar.disabled = cancelado;
+	}
+
+	//formata o botão
+    if (encerrado || cancelado) {
+        botaoSalvar.style.backgroundColor = "#ffffff";
+        botaoSalvar.style.color = "#333333";
+        botaoSalvar.style.border = "1px solid #cccccc";
+		if(encerrado){
+        	botaoSalvar.innerHTML = "Grupo encerrado";
+		}else if(cancelado){
+			botaoSalvar.innerHTML = "Grupo cancelado";
+		}
+    } else {
+        botaoSalvar.style.backgroundColor = "";
+        botaoSalvar.style.color = "";
+        botaoSalvar.style.border = "";
+        botaoSalvar.innerHTML = '<i class="bi bi-floppy"></i> <span>Salvar</span>';
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    controlarBotaoSalvar();
+});
+
+//vou desabilitar o listener quando o usuario altera a situação
+/* 
+document.getElementById("situacao").addEventListener("change", function () {
+    controlarBotaoSalvar();
+});
+*/
+
+
+
+	
+//limpar
+function limpar(){
+	
+	document.getElementById('valorCota').disabled = false;
+	document.getElementById('totalCotas').disabled = false;
+	document.getElementById('dataInicio').disabled = false;
+	
+	document.getElementById('divDataFim').style.display = 'none';
+	
+	document.getElementById('optEncerrado').disabled = true;
+	document.getElementById('optCancelado').disabled = true;
+	
+	botaoCota.disabled = true;
+	botaoCota.className = 'btn-custom btn-custom-light'
+	botaoCota.innerText = '---';
+	
+	
+	const campos = [
+	"id",
+	"nomeGrupo",
+	"valorCota",
+	"totalCotas",
+	"dataInicio",
+	"dataFim",
+	"situacao"
+	]
+	
+	campos.forEach(function (campoId){
+		const campo = document.getElementById(campoId);
+		
+		if(campo){
+			campo.value = '';
+		}
+	});
+	
+	//oculta o Id se existir
+	const divId = document.getElementById("divId");
+
+	if (divId) {
+	    divId.style.display = "none";
+	}
+	
+	//oculta div situação
+	const divSit = document.getElementById("divDataSituacao");
+	if(divSit){
+		divSit.style.display = 'none';
+		document.getElementById("dataSituacao").value = '';
+	}
+	
+	//limpa a mensagem
+	const msg = document.getElementById("msg")
+	if (msg) {
+	    msg.textContent = "";
+	    msg.className = "";
+	}
+	
+	controlarBotaoSalvar();
+	
+	//posiciona o cursor no campo nome
+	document.getElementById("nome")?.focus();
+}
+
+
+
+
+// Página lista de usuários
+function listarUsuarios(){
+	window.location.href ="/grupos";
+}
+
+
+	
+//Script que formata o valor
+const valor = document.getElementById("valorCota");
+
+valor.addEventListener("input", function () {
+
+    let numero = this.value.replace(/\D/g, "");
+
+    numero = (Number(numero) / 100).toFixed(2);
+	
+	this.value = Number(numero).toLocaleString("pt-BR", {
+	    minimumFractionDigits: 2,
+	    maximumFractionDigits: 2
+	});
+
+});
+
+	
+//AJAX COMPLETO QUE SALVA O FORMULÁRIO E TRATA ERROS
+const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+document.getElementById("grupoForm").addEventListener("submit", async function (event) {
+
+	// Evita que formulário seja tratado com os eventos comuns
+	event.preventDefault();
+
+
+	//Captura as variáveis
+	const formulario = this;
+	const mensagem = document.getElementById("msg");
+	mensagem.textContent = "";
+
+
+
+	// Verifica se todos os campos são válidos
+	if (!formulario.reportValidity()) {
+		return; // Interrompe a execução e não chama o AJAX
+	}
+	
+	//ajusta o valor da cota
+	let valorCota = document.getElementById("valorCota").value;
+	//testa se o valor tem , antes de ajustar
+	if(/,/.test(valorCota)){
+		valorCota = valorCota.replace(/\./g,"").replace(",",".");
+	}
+	const numero = Number(valorCota)
+	
+
+	// Se todos os campos foram válidos continua a execução
+	const grupo = {
+		id: document.getElementById("id") ? document.getElementById("id").value : null,
+		nomeGrupo: document.getElementById("nomeGrupo").value,
+		valorCota: numero,
+		totalCotas: document.getElementById("totalCotas").value,
+		dataInicio: document.getElementById("dataInicio").value,
+		dataFim: document.getElementById("dataFim").value,
+		situacao: document.getElementById("situacao").value,
+		dataSituacao: document.getElementById("dataSituacao").value,
+
+	};
+
+	try {
+		
+		const headers = {
+		    "Content-Type": "application/json"
+		};
+
+		// Adiciona o token CSRF à requisição
+		if (csrfToken && csrfHeader) {
+		    headers[csrfHeader] = csrfToken;
+		}
+
+		const response = await fetch("/api/grupo/salvar", {
+		    method: "POST",
+		    headers: headers,
+		    body: JSON.stringify(grupo)
+		});
+
+
+
+
+		// Lê a resposta como texto, independentemente do status
+		const texto = await response.text();
+
+		if (!response.ok) {
+			// Erro retornado pela API
+			mensagem.textContent = texto;
+			mensagem.className = "alert alert-danger";
+			return;
+		}
+
+
+
+		// se der certo
+		// Converte o JSON recebido em objeto JavaScript
+		const grupoSalvo = JSON.parse(texto);
+
+		// Preenche os campos com os dados retornados
+		
+		
+		// Formatar valor
+		let valor = grupoSalvo.valorCota;
+		let valorFormatado = ''
+		if(valor != null){
+			valorFormatado = valor.toLocaleString("pt-BR",{
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
+			});
+		}
+		
+		//Mostra a div id se o id existir
+		const campoId = document.getElementById("id");
+		const divId = document.getElementById("divId");
+		if(campoId && grupoSalvo.id != null){
+			campoId.value = grupoSalvo.id;
+			divId.style.display = "block";
+		}
+		
+		//Mostra a div data situacao
+		const campoSit = document.getElementById("dataSituacao");
+		const divSit = document.getElementById("divDataSituacao");
+		if(campoSit && grupoSalvo.dataSituacao != null){
+			campoSit.value = grupoSalvo.dataSituacao;
+			divSit.style.display = 'block';
+		}
+		
+		document.getElementById("divDataFim").style.display = 'block';
+		
+				
+		document.getElementById("nomeGrupo").value = grupoSalvo.nomeGrupo ?? "";
+		document.getElementById("valorCota").value = valorFormatado ?? "";
+		document.getElementById("totalCotas").value = grupoSalvo.totalCotas ?? "";
+		document.getElementById("dataInicio").value = grupoSalvo.dataInicio;
+		document.getElementById("dataFim").value = grupoSalvo.dataFim;
+		document.getElementById("situacao").value = grupoSalvo.situacao;
+				controlarBotaoSalvar();
+		document.getElementById("dataSituacao").value = grupoSalvo.dataSituacao;
+
+		mensagem.textContent = "Grupo salvo com sucesso";
+		mensagem.className = "alert alert-success";
+
+
+		// Se der algum exception
+	} catch (error) {
+		mensagem.textContent = "Não foi possível conectar ao servidor.";
+		mensagem.className = "alert alert-danger";
+		console.error(error);
+	}
+
+});
+
+
+
+
+</script>
+
+</body>
+
+</html>

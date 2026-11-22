@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Consulta de parcelas</title>
+
+    <link rel="icon" th:href="@{/assets/images/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/css_card_parcela.css}">
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+</head>
+
+<body>
+    <div id="menu" th:data-url="@{/fragments/menu}"></div>
+
+    <div class="main-wrapper">
+
+        <div id="topnavbar" th:attr="data-url=@{/fragments/topnavbar}"></div>
+
+        <div class="container-fluid py-3 px-1 px-md-4">
+
+            <!-- CABEÇALHO -->
+            <div class="w-100">
+                <!--
+    <div class="d-flex justify-content-between align-items-center mb-4">
+		-->
+                <h4 class="text-success fw-bold m-3">
+                    Consulta de parcelas
+                </h4>
+
+
+                <!-- CARD DE FILTROS -->
+                <div class="card shadow-sm border-0 mb-2">
+
+                    <div class="card-header bg-white py-1">
+                        <h5 class="mb-0">Filtros de consulta</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- ETAPA 1: GRUPO E TIPO -->
+                        <form th:action="@{/parcelas}" method="get">
+
+                            <div class="row g-1">
+
+                                <!-- GRUPO -->
+                                <div class="col-12 col-md-4">
+
+                                    <label for="grupoId" class="form-label">
+                                        Grupo
+                                    </label>
+
+                                    <select id="grupoId" name="grupoId" class="form-select" required>
+
+                                        <option value="">
+                                            Selecione o grupo
+                                        </option>
+
+                                        <option th:each="grupo : ${grupos}" th:value="${grupo.id}"
+                                            th:text="${grupo.nomeGrupo}" th:selected="${grupoId != null
+                                        and grupoId.equals(grupo.id)}">
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                                <!-- TIPO DE CONSULTA -->
+                                <div class="col-12 col-md-6">
+
+                                    <label class="form-label">
+                                        Tipo de consulta
+                                    </label>
+
+                                    <div class="d-flex flex-wrap gap-3 mt-2">
+
+                                        <div class="form-check ms-1">
+                                            <input class="form-check-input" type="radio" name="tipo" id="tipoMes"
+                                                value="mes" th:checked="${tipo == 'mes'}" required>
+
+                                            <label class="form-check-label" for="tipoMes">
+                                                Por mês
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="tipo" id="tipoUsuario"
+                                                value="usuario" th:checked="${tipo == 'usuario'}">
+
+                                            <label class="form-check-label" for="tipoUsuario">
+                                                Por usuário
+                                            </label>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- BOTÃO -->
+                                <div class="col-12 espacamento-botao">
+
+                                    <button type="submit" class="btn btn-success">
+                                        Selecionar grupo
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                        <!-- ETAPA 2: FILTRO ESPECÍFICO -->
+                        <div th:if="${grupoId != null and tipo != null}" class="border-top mt-4 pt-4">
+
+                            <form th:action="@{/parcelas}" method="get">
+
+                                <input type="hidden" name="grupoId" th:value="${grupoId}">
+
+                                <input type="hidden" name="tipo" th:value="${tipo}">
+
+                                <div class="row g-1 align-items-end ">
+
+                                    <!-- MÊS -->
+                                    <div th:if="${tipo == 'mes'}" class="col-12 col-md-6 mb-2">
+
+                                        <label for="mes" class="form-label">
+                                            Mês de vencimento
+                                        </label>
+
+                                        <input type="month" id="mes" name="mes" class="form-control" th:value="${mes}"
+                                            required>
+
+                                    </div>
+
+                                    <!-- USUÁRIO -->
+                                    <div th:if="${tipo == 'usuario'}" class="col-12 col-md-6 mb-2">
+
+                                        <label for="usuarioId" class="form-label">
+                                            Usuário
+                                        </label>
+
+                                        <select id="usuarioId" name="usuarioId" class="form-select" required>
+
+                                            <option value="">
+                                                Selecione o usuário
+                                            </option>
+
+                                            <option th:each="usuario : ${usuarios}" th:value="${usuario.id}"
+                                                th:text="${usuario.nome}" th:selected="${usuarioId != null
+                                            and usuarioId.equals(usuario.id)}">
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <div class="col-12 espacamento-botao">
+
+                                        <button type="submit" class="btn btn-primary">
+                                            Consultar parcelas
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- RESULTADOS -->
+                <div th:if="${parcelas != null}" class="card shadow-sm border-0">
+
+                    <div class="card-header bg-white m-0 p-0">
+
+                        <h5 class="m-0">
+                            Resultado da consulta
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body px-0">
+
+                        <!-- NENHUMA PARCELA -->
+                        <div th:if="${#lists.isEmpty(parcelas)}" class="alert alert-info mb-0" role="alert">
+
+                            Nenhuma parcela encontrada para os filtros informados.
+
+                        </div>
+
+
+                        <!-- TABELA -->
+
+                        <!-- RESULTADOS EM CARDS RESPONSIVOS -->
+                        <div th:unless="${#lists.isEmpty(parcelas)}">
+
+                            <div class="row g-1">
+
+                                <div class="col-12 col-md-6 col-xl-4" th:each="parcela : ${parcelas}">
+
+                                    <!-- CARD DA PARCELA -->
+                                    <div class="card shadow-sm border-0 parcela-card">
+
+                                        <div class="card-body">
+
+                                            <!-- CABEÇALHO -->
+                                            <div class="mb-1">
+
+                                                <!-- NÚMERO DA PARCELA E SITUAÇÃO -->
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+
+                                                    <div>
+                                                        <div class="text-secondary small mb-1">
+                                                            Parcela
+                                                        </div>
+
+                                                        <h6 class="fw-bold mb-0"
+                                                            th:text="${'#' + parcela.numeroParcela}">
+                                                        </h6>
+                                                    </div>
+
+                                                    <!-- SITUAÇÃO COLORIDA -->
+                                                    <div class="text-end flex-shrink-0">
+
+                                                        <span
+                                                            th:if="${parcela.situacao == 'paga' or parcela.situacao == 'pago'}"
+                                                            class="badge bg-success parcela-status">
+                                                            <i class="bi bi-check-circle me-1"></i>
+                                                            Paga
+                                                        </span>
+
+                                                        <span
+                                                            th:if="${parcela.situacao == 'em aberto' or parcela.situacao == 'futura'}"
+                                                            class="badge bg-warning text-dark parcela-status">
+                                                            <i class="bi bi-clock me-1"></i>
+                                                            Em aberto
+                                                        </span>
+
+                                                        <span
+                                                            th:if="${parcela.situacao == 'em atraso' or parcela.situacao == 'atraso'}"
+                                                            class="badge bg-danger parcela-status">
+                                                            <i class="bi bi-exclamation-circle me-1"></i>
+                                                            Em atraso
+                                                        </span>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <!-- NOME OCUPANDO TODA A LARGURA -->
+                                                <div class="fw-semibold parcela-nome w-100"
+                                                    th:text="${parcela.usuario.nome}">
+                                                </div>
+
+                                            </div>
+
+                                            <hr class="my-1">
+
+                                            <!-- VENCIMENTO -->
+                                            <div class="d-flex justify-content-between
+			                                align-items-center mb-0">
+
+                                                <div class="text-secondary small">
+                                                    <i class="bi bi-calendar-event me-1"></i>
+                                                    Venc:
+                                                </div>
+
+                                                <div class="fw-semibold text-nowrap" th:text="${#temporals.format(
+			                                 parcela.dtVencimento, 'dd/MM/yy')}">
+                                                </div>
+
+                                            </div>
+
+                                            <!-- VALOR DEVIDO -->
+                                            <div class="d-flex justify-content-between
+			                                align-items-center mb-1">
+
+                                                <div class="text-secondary small">
+                                                    <i class="bi bi-currency-dollar me-1"></i>
+                                                    Valor:
+                                                </div>
+
+                                                <div class="fw-bold text-nowrap" th:text="${#numbers.formatDecimal(
+			                                 parcela.valorDevido,
+			                                 1, 'POINT', 2, 'COMMA')}">
+                                                </div>
+
+                                            </div>
+
+                                            <!-- DATA DO PAGAMENTO -->
+                                            <div class="d-flex justify-content-between
+			                                align-items-center">
+
+                                                <div class="text-secondary small">
+                                                    <i class="bi bi-receipt me-1"></i>
+                                                    Pag.:
+                                                </div>
+
+                                                <div class="text-nowrap" th:if="${parcela.dtPagamento != null}" th:text="${#temporals.format(
+			                                 parcela.dtPagamento, 'dd/MM/yy')}">
+                                                </div>
+
+                                                <div class="text-secondary" th:if="${parcela.dtPagamento == null}">
+                                                    —
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <!-- TABELA FIM -->
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- Bibliotecas Script -->
+        <script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+        <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+        <script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+
+        <!-- Biblioteca dashboard  -->
+        <script th:src="@{/assets/js/dashboard.js}"></script>
+
+        <!-- SCRIPT DOS MENUS -->
+        <script th:inline="javascript">
+            $(document).ready(function () {
+
+                const menuUrl = $("#menu").attr("data-url");
+                const navbarUrl = $("#topnavbar").attr("data-url");
+
+                $("#menu").load(menuUrl, function (response, status, xhr) {
+                    if (status === "error") {
+                        console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+                    }
+                });
+
+                $("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+                    if (status === "error") {
+                        console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+                    }
+                });
+
+            });
+        </script>
+        <!-- SCRIPT DOS MENUS -->
+
+        <script>
+
+            function obterHeadersCSRF() {
+                const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+                const headers = {
+                    "Content-Type": "application/json"
+                };
+
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+
+                return headers;
+            }
+        </script>
+</body>
+
+</html>

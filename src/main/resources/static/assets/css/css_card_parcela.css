@@ -1,0 +1,55 @@
+/* Cards da consulta de parcelas */
+
+.card.parcela-card {
+    border-radius: 12px;
+    transition: box-shadow 0.2s ease;
+    height: auto !important;
+    min-height: 0;
+
+    /* NOVOS AJUSTES */
+	padding: 14px !important;
+    margin-bottom: 6px !important;
+}
+
+.parcela-card > .card-body {
+    min-width: 0;
+}
+
+.parcela-nome {
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+    color: #198754;
+}
+
+.parcela-status {
+    white-space: nowrap;
+    font-size: 0.75rem;
+    padding: 0.45rem 0.6rem;
+}
+
+.parcela-card hr {
+    opacity: 0.12;
+    margin: 0.35rem 0;
+}
+
+.parcela-card .card-body .mb-1 {
+    margin-bottom: 0.1rem !important;
+}
+
+/* Ajustes para telas pequenas */
+
+@media (max-width: 575.98px) {
+
+    .card.parcela-card > .card-body {
+        padding: 0 !important;
+    }
+
+    .parcela-status {
+        font-size: 0.7rem;
+    }
+}
+
+/* Ajuste do espaçamento de alguns botoes */
+.row > div.espacamento-botao{
+    margin-top: 6px !important;
+}

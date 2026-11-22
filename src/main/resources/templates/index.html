@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Login | Sistema de Consórcios</title>
+
+    <link rel="stylesheet"
+          th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+    <main class="container min-vh-100 d-flex align-items-center justify-content-center py-4">
+
+        <div class="card border-0 shadow-sm rounded-4 w-100"
+             style="max-width: 420px;">
+
+            <div class="card-body p-4 p-md-5">
+
+                <div class="text-center mb-4">
+
+                    <div class="text-success mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="48"
+                             height="48"
+                             fill="currentColor"
+                             class="bi bi-shield-lock"
+                             viewBox="0 0 16 16">
+                            <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.5.5 0 0 0-.35.473c-.03 2.56.11 4.92 1.35 6.97 1.05 1.74 2.78 3.04 4.25 3.9a.5.5 0 0 0 .5 0c1.47-.86 3.2-2.16 4.25-3.9 1.24-2.05 1.38-4.41 1.35-6.97a.5.5 0 0 0-.35-.473 61.44 61.44 0 0 0-2.837-.856C9.83 1.38 8.9 1.25 8 1.25s-1.83.13-2.662.34zM8 2.25c.79 0 1.62.12 2.5.34.77.19 1.54.42 2.25.65-.01 2.32-.17 4.27-1.2 5.97C10.65 10.6 9.1 11.8 8 12.48c-1.1-.68-2.65-1.88-3.55-3.27-1.03-1.7-1.19-3.65-1.2-5.97.71-.23 1.48-.46 2.25-.65.88-.22 1.71-.34 2.5-.34z"/>
+                            <path d="M8 4a1.5 1.5 0 0 0-1.5 1.5v1a.5.5 0 0 0-1 0v2a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-1 0v-1A1.5 1.5 0 0 0 8 4zm-.5 2.5v-1a.5.5 0 0 1 1 0v1z"/>
+                        </svg>
+                    </div>
+
+                    <h4 class="fw-bold text-success mb-2">
+                        Bem-vindo!
+                    </h4>
+
+                    <p class="text-secondary mb-0">
+                        Acesse sua conta para continuar
+                    </p>
+
+                </div>
+
+                <div th:if="${param.error}"
+                     class="alert alert-danger py-2"
+                     role="alert">
+                    Usuário ou senha inválidos.
+                </div>
+
+                <div th:if="${param.logout}"
+                     class="alert alert-success py-2"
+                     role="alert">
+                    Você saiu do sistema com segurança.
+                </div>
+
+                <form th:action="@{/login}" method="post">
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold">
+                            Usuário
+                        </label>
+
+                        <input type="text"
+                               class="form-control form-control-lg"
+							   inputmode="numeric"
+							   maxlength="11"
+                               id="username"
+                               name="username"
+                               placeholder="CPF somente números"
+                               autocomplete="username"
+                               required
+                               autofocus>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">
+                            Senha
+                        </label>
+
+                        <div class="input-group input-group-lg">
+                            <input type="password"
+									maxlength="8"
+									inputmode="numeric"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   placeholder="Digite sua senha"
+                                   autocomplete="current-password"
+                                   required>
+
+                            <button class="btn btn-outline-secondary"
+                                    type="button"
+                                    id="btnVisualizarSenha"
+                                    aria-label="Mostrar senha">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     width="20"
+                                     height="20"
+                                     fill="currentColor"
+                                     class="bi bi-eye"
+                                     viewBox="0 0 16 16">
+                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.17 8a13 13 0 0 1 1.66-2.15C4.1 4.6 5.87 3.5 8 3.5s3.9 1.1 5.17 2.35A13 13 0 0 1 14.83 8a13 13 0 0 1-1.66 2.15C11.9 11.4 10.13 12.5 8 12.5s-3.9-1.1-5.17-2.35A13 13 0 0 1 1.17 8z"/>
+                                    <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM6 8a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-success btn-lg w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="18"
+                             height="18"
+                             fill="currentColor"
+                             class="bi bi-box-arrow-in-right me-2"
+                             viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 1 0v1.5H13v-8H7.5V5a.5.5 0 0 1-1 0z"/>
+                            <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H9.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                        </svg>
+                        Entrar no sistema
+                    </button>
+
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <small class="text-secondary">
+                        Sistema de
+                        <span class="fw-semibold text-success">
+                            Gestão de Consórcios
+                        </span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const campoSenha = document.getElementById('password');
+        const botaoSenha = document.getElementById('btnVisualizarSenha');
+
+        botaoSenha.addEventListener('click', function () {
+            const mostrar = campoSenha.type === 'password';
+
+            campoSenha.type = mostrar ? 'text' : 'password';
+
+            botaoSenha.setAttribute(
+                'aria-label',
+                mostrar ? 'Ocultar senha' : 'Mostrar senha'
+            );
+
+            botaoSenha.innerHTML = mostrar
+                ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16"><path d="M13.36 11.24C14.62 10.15 15.5 8 15.5 8s-3-5.5-7.5-5.5c-.8 0-1.55.15-2.22.4l.9.9c.42-.1.86-.16 1.32-.16 2.13 0 3.9 1.1 5.17 2.35A13 13 0 0 1 14.83 8a13 13 0 0 1-2.2 2.68z"/><path d="M11.3 9.18a3 3 0 0 0-4.48-4.48l.9.9a2 2 0 0 1 2.68 2.68z"/><path d="m.646.646.708-.708 14.708 14.708-.708.708zM3.5 5.06A13 13 0 0 0 1.17 8a13 13 0 0 0 1.66 2.15C4.1 11.4 5.87 12.5 8 12.5c.57 0 1.11-.09 1.62-.23l.9.9c-.78.22-1.62.33-2.52.33C3 13.5 0 8 0 8s1.18-2.17 3.5-3.94z"/></svg>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.17 8a13 13 0 0 1 1.66-2.15C4.1 4.6 5.87 3.5 8 3.5s3.9 1.1 5.17 2.35A13 13 0 0 1 14.83 8a13 13 0 0 1-1.66 2.15C11.9 11.4 10.13 12.5 8 12.5s-3.9-1.1-5.17-2.35A13 13 0 0 1 1.17 8z"/><path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM6 8a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/></svg>';
+        });
+    </script>
+
+</body>
+</html>

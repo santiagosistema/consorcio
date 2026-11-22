@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Notificações | Consórcio Família Pinheiro</title>
+
+    <!-- CSRF -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/assets/css/main.css}">
+
+    <style>
+        .notificacoes-container {
+            padding: 24px 0;
+        }
+
+        .notificacoes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .notificacoes-titulo {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .notificacoes-subtitulo {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .notificacoes-resumo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .resumo-card {
+            flex: 1 1 160px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .resumo-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .resumo-valor {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .notificacoes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .notificacao-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .notificacao-card.nao-lida {
+            background: #f2f7ff;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .notificacao-icone {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #e7f0ff;
+            color: #0d6efd;
+            font-size: 1.25rem;
+        }
+
+        .notificacao-conteudo {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notificacao-titulo {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        .notificacao-mensagem {
+            color: #495057;
+            margin-bottom: 10px;
+            overflow-wrap: anywhere;
+            white-space: pre-line;
+        }
+
+        .notificacao-data {
+            font-size: 0.82rem;
+            color: #6c757d;
+        }
+
+        .notificacao-acoes {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .notificacao-vazia {
+            text-align: center;
+            padding: 55px 20px;
+            background: #fff;
+            border: 1px dashed #ced4da;
+            border-radius: 12px;
+        }
+
+        .notificacao-vazia i {
+            display: block;
+            font-size: 3rem;
+            color: #adb5bd;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 576px) {
+            .notificacao-card {
+                flex-wrap: wrap;
+                padding: 14px;
+            }
+
+            .notificacao-conteudo {
+                width: calc(100% - 60px);
+                flex: auto;
+            }
+
+            .notificacao-acoes {
+                width: 100%;
+                padding-left: 58px;
+            }
+
+            .notificacoes-titulo {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+	
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+	
+</head>
+
+<body>
+
+	<!-- Menu lateral -->
+	<div id="menu" th:attr="data-url=@{/fragments/menu}">
+	</div>
+	
+	<div class="main-wrapper">
+	
+		<!-- Barra superior -->
+		<div id="topnavbar" th:attr="data-url=@{/fragments/topnavbar}">
+		</div>
+
+        <main class="container-fluid notificacoes-container">
+
+            <!-- Cabeçalho -->
+            <div class="notificacoes-header">
+                <div>
+                    <h1 class="notificacoes-titulo">
+                        <i class="bi bi-bell me-2"></i>
+                        Minhas notificações
+                    </h1>
+
+                    <p class="notificacoes-subtitulo">
+                        Consulte, organize e exclua suas notificações.
+                    </p>
+                </div>
+
+                <a th:href="@{/home}"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+			
+			<!-- Button trigger modal -->
+			<button type="button" class="btn-custom btn-custom-primary btn-custom-sm" style="margin-bottom: 10px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+			  Enviar notificação
+			</button>
+
+			
+			<!-- Modal -->
+			<!-- Modal -->
+			<!-- Modal -->
+			<div class="modal fade" id="exampleModal" tabindex="-1"
+			     aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+			    <div class="modal-dialog">
+			        <div class="modal-content">
+
+			            <div class="modal-header">
+			                <h1 class="modal-title fs-5" id="exampleModalLabel">
+			                    Enviar notificação
+			                </h1>
+
+			                <button type="button" class="btn-close"
+			                        data-bs-dismiss="modal" aria-label="Close">
+			                </button>
+			            </div>
+
+			            <form method="post" id="formNotificar">
+
+			                <div class="modal-body">
+
+			                    <div class="mb-3">
+			                        <label for="titulo" class="form-label-custom">
+			                            Título da notificação:
+			                        </label>
+
+			                        <input type="text"
+			                               class="form-control-custom"
+			                               style="margin-bottom: 10px;"
+			                               placeholder="Título"
+			                               maxlength="30"
+			                               name="titulo"
+			                               id="titulo"
+			                               required>
+
+			                        <label for="mensagem" class="form-label-custom">
+			                            Escreva sua notificação:
+			                        </label>
+
+			                        <textarea class="form-control-custom"
+			                                  maxlength="300"
+			                                  id="mensagem"
+			                                  name="mensagem"
+			                                  rows="3"
+			                                  placeholder="Notificação será anônima. Escreva no máximo 300 caracteres"
+			                                  required></textarea>
+			                    </div>
+
+			                    <div id="resultadoNotificacao"></div>
+
+			                </div>
+
+			                <div class="modal-footer">
+
+			                    <button class="btn-custom btn-custom-outline-secondary"
+			                            type="submit">
+			                        Notificar
+			                    </button>
+
+			                    <button type="button"
+			                            class="btn-custom btn-custom-light"
+			                            data-bs-dismiss="modal">
+			                        Sair
+			                    </button>
+
+			                </div>
+
+			            </form>
+
+			        </div>
+			    </div>
+			</div>
+			<!-- Modal -->
+			<!-- Modal -->
+			<!-- Modal -->
+
+			
+            <!-- Resumo -->
+            <div class="notificacoes-resumo">
+
+                <div class="resumo-card">
+                    <span class="resumo-label">Total de notificações</span>
+
+                    <span class="resumo-valor"
+                          id="totalNotificacoes"
+                          th:text="${#lists.size(notificacoes)}">
+                        0
+                    </span>
+                </div>
+
+                <div class="resumo-card">
+                    <span class="resumo-label">Não lidas</span>
+
+                    <span class="resumo-valor text-primary"
+                          id="totalNaoLidas"
+                          th:text="${notificacoesNaoLidas}">
+                        0
+                    </span>
+                </div>
+
+            </div>
+
+            <!-- Mensagem de retorno -->
+            <div id="mensagemNotificacao"
+                 class="alert d-none"
+                 role="alert">
+            </div>
+
+            <!-- Lista de notificações -->
+            <div id="listaNotificacoes"
+                 class="notificacoes-lista">
+
+                <article th:each="notificacao : ${notificacoes}"
+                         class="notificacao-card"
+                         th:classappend="${!notificacao.lida ? ' nao-lida' : ''}"
+                         th:attr="
+                            data-notificacao-id=${notificacao.id},
+                            data-delete-url=@{/api/notificacoes/{id}(id=${notificacao.id})},
+                            data-ler-url=@{/api/notificacoes/{id}/ler(id=${notificacao.id})}">
+
+                    <div class="notificacao-icone">
+                        <i class="bi bi-bell-fill"></i>
+                    </div>
+
+                    <div class="notificacao-conteudo">
+
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+
+                            <h2 class="notificacao-titulo mb-0"
+                                th:text="${notificacao.titulo}">
+                                Título da notificação
+                            </h2>
+
+                            <span th:if="${!notificacao.lida}"
+                                  class="badge text-bg-primary status-nao-lida">
+                                Não lida
+                            </span>
+
+                            <span th:if="${notificacao.lida}"
+                                  class="badge text-bg-secondary status-lida">
+                                Lida
+                            </span>
+
+                        </div>
+
+                        <p class="notificacao-mensagem"
+                           th:text="${notificacao.mensagem}">
+                            Mensagem da notificação.
+                        </p>
+
+                        <div class="notificacao-data">
+                            <i class="bi bi-calendar3 me-1"></i>
+
+                            <span th:if="${notificacao.dataCriacao != null}"
+                                  th:text="${#temporals.format(notificacao.dataCriacao, 'dd/MM/yyyy')}">
+                                24/10/2026
+                            </span>
+
+                            <span th:if="${notificacao.dataCriacao == null}">
+                                Data não informada
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="notificacao-acoes">
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary btn-marcar-lida"
+                                th:if="${!notificacao.lida}"
+                                title="Marcar como lida">
+
+                            <i class="bi bi-check2"></i>
+                            <span class="d-none d-md-inline">Marcar como lida</span>
+                        </button>
+
+                        <!--
+                          Por segurança, o botão de exclusão aparece apenas
+                          para notificações individuais, não compartilhadas.
+                        -->
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger btn-excluir-notificacao"
+                                th:if="${notificacao.usuario != null}"
+                                title="Excluir esta notificação">
+
+                            <i class="bi bi-trash"></i>
+                            <span class="d-none d-md-inline">Excluir</span>
+                        </button>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+            <!-- Estado vazio -->
+            <div id="estadoVazio"
+                 class="notificacao-vazia"
+                 th:classappend="${!#lists.isEmpty(notificacoes)} ? ' d-none' : ''">
+
+                <i class="bi bi-bell-slash"></i>
+
+                <h2 class="h5">Nenhuma notificação encontrada</h2>
+
+                <p class="text-secondary mb-0">
+                    Quando houver notificações, elas aparecerão aqui.
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div class="modal fade"
+         id="modalExcluirNotificacao"
+         tabindex="-1"
+         aria-labelledby="tituloModalExcluir"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tituloModalExcluir">
+                        Excluir notificação
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Fechar">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    Deseja realmente excluir esta notificação da sua lista?
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger"
+                            id="confirmarExcluirNotificacao">
+                        <i class="bi bi-trash me-1"></i>
+                        Excluir
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bibliotecas -->
+    <script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+
+    <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+    <script th:src="@{/assets/js/notification.js}"></script>
+	
+	<script th:src="@{/assets/js/dashboard.js}"></script>
+
+	
+	
+	<!-- SCRIPT DOS MENUS -->
+	<script th:inline="javascript">
+		$(document).ready(function () {
+
+			const menuUrl = $("#menu").attr("data-url");
+			const navbarUrl = $("#topnavbar").attr("data-url");
+
+			$("#menu").load(menuUrl, function (response, status, xhr) {
+				if (status === "error") {
+					console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+				}
+			});
+
+			$("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+				if (status === "error") {
+					console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+				}
+			});
+
+		});
+	</script>
+	<!-- SCRIPT DOS MENUS -->
+	
+	
+
+    <!-- Ações da página -->
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const csrfToken =
+                document.querySelector('meta[name="_csrf"]')?.content;
+
+            const csrfHeader =
+                document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            const lista = document.getElementById("listaNotificacoes");
+            const estadoVazio = document.getElementById("estadoVazio");
+            const modalElemento = document.getElementById("modalExcluirNotificacao");
+            const botaoConfirmar = document.getElementById("confirmarExcluirNotificacao");
+
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElemento);
+
+            let cardParaExcluir = null;
+
+            function mostrarMensagem(texto, tipo) {
+                const elemento = document.getElementById("mensagemNotificacao");
+
+                elemento.textContent = texto;
+                elemento.className = "alert alert-" + tipo;
+                elemento.classList.remove("d-none");
+
+                window.setTimeout(function () {
+                    elemento.classList.add("d-none");
+                }, 4000);
+            }
+
+            function obterHeaders() {
+                const headers = {};
+
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+
+                return headers;
+            }
+
+            function atualizarResumo() {
+                const cards = lista.querySelectorAll(".notificacao-card");
+
+                const naoLidas = lista.querySelectorAll(
+                    ".notificacao-card.nao-lida"
+                ).length;
+
+                document.getElementById("totalNotificacoes").textContent =
+                    cards.length;
+
+                document.getElementById("totalNaoLidas").textContent =
+                    naoLidas;
+
+                estadoVazio.classList.toggle("d-none", cards.length > 0);
+            }
+
+            // Marcar uma notificação como lida.
+            lista.addEventListener("click", async function (event) {
+
+                const botao = event.target.closest(".btn-marcar-lida");
+
+                if (!botao) {
+                    return;
+                }
+
+                const card = botao.closest(".notificacao-card");
+
+                if (!card) {
+                    return;
+                }
+
+                botao.disabled = true;
+
+                try {
+                    const resposta = await fetch(card.dataset.lerUrl, {
+                        method: "POST",
+                        headers: obterHeaders(),
+                        credentials: "same-origin"
+                    });
+
+                    if (!resposta.ok) {
+                        throw new Error("HTTP " + resposta.status);
+                    }
+
+                    card.classList.remove("nao-lida");
+
+                    const badge = card.querySelector(".status-nao-lida");
+
+                    if (badge) {
+                        badge.className = "badge text-bg-secondary status-lida";
+                        badge.textContent = "Lida";
+                    }
+
+                    botao.remove();
+
+                    atualizarResumo();
+
+                    mostrarMensagem(
+                        "Notificação marcada como lida.",
+                        "success"
+                    );
+
+                } catch (erro) {
+                    console.error(erro);
+
+                    mostrarMensagem(
+                        "Não foi possível marcar a notificação como lida.",
+                        "danger"
+                    );
+
+                    botao.disabled = false;
+                }
+            });
+
+            // Abrir confirmação de exclusão.
+            lista.addEventListener("click", function (event) {
+
+                const botao = event.target.closest(".btn-excluir-notificacao");
+
+                if (!botao) {
+                    return;
+                }
+
+                cardParaExcluir = botao.closest(".notificacao-card");
+
+                if (cardParaExcluir) {
+                    modal.show();
+                }
+            });
+
+            // Confirmar exclusão.
+            botaoConfirmar.addEventListener("click", async function () {
+
+                if (!cardParaExcluir) {
+                    return;
+                }
+
+                const card = cardParaExcluir;
+
+                botaoConfirmar.disabled = true;
+
+                try {
+                    const resposta = await fetch(card.dataset.deleteUrl, {
+                        method: "DELETE",
+                        headers: obterHeaders(),
+                        credentials: "same-origin"
+                    });
+
+                    if (!resposta.ok) {
+                        const detalhe = await resposta.text();
+
+                        console.error(
+                            "Falha ao excluir:",
+                            resposta.status,
+                            detalhe
+                        );
+
+                        throw new Error("HTTP " + resposta.status);
+                    }
+
+                    card.remove();
+
+                    atualizarResumo();
+
+                    modal.hide();
+
+                    mostrarMensagem(
+                        "Notificação excluída com sucesso.",
+                        "success"
+                    );
+
+                    cardParaExcluir = null;
+
+                } catch (erro) {
+                    console.error(erro);
+
+                    mostrarMensagem(
+                        "Não foi possível excluir a notificação. Verifique se o endpoint DELETE está implementado.",
+                        "danger"
+                    );
+
+                } finally {
+                    botaoConfirmar.disabled = false;
+                }
+            });
+
+            atualizarResumo();
+
+        });
+		
+    </script>
+	
+	<!-- CERTIFICADO -->
+	<script>
+		/* envia o CSRF */
+		function obterHeadersCSRF() {
+		    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+		    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+		    const headers = {
+		        "Content-Type": "application/json"
+		    };
+
+		    if (csrfToken && csrfHeader) {
+		        headers[csrfHeader] = csrfToken;
+		    }
+
+		    return headers;
+		}
+	</script>
+
+	
+	
+	
+	<!-- AJAX PARA SALVAR A NOTIFICAÇÃO -->
+	<!-- AJAX PARA SALVAR A NOTIFICAÇÃO -->
+	<!-- AJAX PARA SALVAR A NOTIFICAÇÃO -->
+
+<script>
+	
+    
+	
+	// AJAX PARA ENVIAR A NOTIFICAÇÃO
+	// AJAX PARA ENVIAR A NOTIFICAÇÃO
+	document.getElementById("formNotificar").addEventListener("submit", async function(event) {
+
+	    event.preventDefault();
+
+	    const formulario = this;
+	    const mensagem = document.getElementById("mensagem").value.trim();
+	    const titulo = document.getElementById("titulo").value.trim();
+
+	    const resultado = document.getElementById("resultadoNotificacao");
+	    const botaoNotificar = formulario.querySelector('button[type="submit"]');
+
+	    if (!formulario.reportValidity()) {
+	        return;
+	    }
+
+	    if (!titulo || !mensagem) {
+	        resultado.textContent = "Preencha o título e a mensagem.";
+	        resultado.className = "alert alert-danger";
+	        return;
+	    }
+
+	    try {
+
+	        botaoNotificar.disabled = true;
+	        botaoNotificar.textContent = "Enviando...";
+
+	        const dados = new URLSearchParams();
+	        dados.append("titulo", titulo);
+	        dados.append("mensagem", mensagem);
+
+	        // Configura os cabeçalhos
+	        const headers = {
+	            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+	        };
+
+	        // Captura o token CSRF
+	        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+	        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+	        if (csrfToken && csrfHeader) {
+	            headers[csrfHeader] = csrfToken;
+	        } else {
+	            console.warn("Token CSRF não encontrado no HTML.");
+	        }
+
+	        // Envia a notificação
+	        const response = await fetch("/api/notificacoes/notificar", {
+	            method: "POST",
+	            headers: headers,
+	            body: dados
+	        });
+
+	        const texto = await response.text();
+
+	        if (!response.ok) {
+	            resultado.textContent = "Erro " + response.status + ": " +
+	                (texto || "Não foi possível enviar a notificação.");
+
+	            resultado.className = "alert alert-danger";
+	            return;
+	        }
+
+	        resultado.textContent = texto || "Notificação enviada com sucesso!";
+	        resultado.className = "alert alert-success";
+
+	        formulario.reset();
+
+	    } catch (error) {
+
+	        resultado.textContent = "Não foi possível conectar ao servidor.";
+	        resultado.className = "alert alert-danger";
+
+	        console.error("Erro ao enviar notificação:", error);
+
+	    } finally {
+
+	        botaoNotificar.disabled = false;
+	        botaoNotificar.textContent = "Notificar";
+
+	    }
+
+	});
+</script>
+		
+</body>
+</html>
