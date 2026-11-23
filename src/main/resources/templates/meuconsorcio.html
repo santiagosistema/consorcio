@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Meu consórcio</title>
+
+	<!-- SEO Optimization -->
+	<meta name="description" content="Consorcio Sistema Manoel Santiago Pinheiro Neto Dev Java">
+	<meta name="author" content="Manoel Santiago Pinheiro Neto">
+
+	<!-- Favicon -->
+	<link rel="icon" th:href="@{/assets/images/favicon.ico}">
+
+
+	<!-- CSS -->
+	<link rel="stylesheet" th:href="@{/assets/libs/bootstrap/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/bootstrap-icons/bootstrap-icons.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/apexcharts/apexcharts.css}">
+	<link rel="stylesheet" th:href="@{/assets/libs/flatpickr/flatpickr.min.css}">
+	<link rel="stylesheet" th:href="@{/assets/css/main.css}">
+
+	<th:block th:replace="~{fragments/csrf :: csrf}"></th:block>
+</head>
+
+<body>
+
+	<!-- Inserir o menu aqui -->
+	<div id="menu" th:data-url="@{/fragments/menu}"></div>
+	<!-- Inserir o menu aqui -->
+
+
+	<!-- ==========================================
+         START: Main Content Area
+         ========================================== -->
+	<div class="main-wrapper">
+
+
+		<!-- Inserir top nav bar -->
+		<div id="topnavbar" th:attr="data-url=@{/fragments/topnavbar}">
+		</div>
+		<!-- Inserir top nav bar -->
+
+
+		<!-- ==========================================
+  		COMEÇAR A PÁGINA DAQUI
+   		========================================== -->
+
+
+
+		<!-- 03 CARTÕES DO TOPO -->
+
+		<!-- TOP AREA: Quick Info Stat Cards Row (Full Width) -->
+		<div class="col-12">
+			<div class="row g-2">
+
+				<!-- Início Card 2: Informações Pessoais -->
+				<div class="col-md-4 mb-4">
+					<div class="card alert-green-card">
+						<div class="position-relative z-index-2 d-flex flex-column">
+
+							<div class="alert-green-text fs-6">
+								<i class="bi bi-person me-1"></i>
+								Manoel Santiago
+								Pinheiro
+								Neto
+							</div>
+
+							<hr class="border-white">
+
+							<div class="alert-green-link">
+								<i class="bi bi-envelope-at me-1"></i>
+								manoel.santiago1@gmail.com
+							</div>
+
+							<div class="alert-green-link">
+								<i class="bi bi-whatsapp me-1"></i>
+								(68)99203-9934
+							</div>
+
+						</div>
+
+						<p class="alert-success z-index-2" id="alert-link-statistics">
+							<span>
+								<i class="bi bi-info-circle me-1"></i>
+								Seus dados de contato
+							</span>
+						</p>
+
+					</div>
+				</div>
+
+
+
+				<!-- Início Card SEU RESUMO -->
+				<div class="col-md-4">
+					<div class="card card-stat d-flex flex-column gap-1">
+
+						<div class="d-flex flex-column mb-3">
+							<span class="text-secondary fw-semibold fs-6 text-center">
+								SEU RESUMO
+							</span>
+						</div>
+
+						<div class="row g-2">
+
+
+							<!-- CARD COTAS -->
+							<div class="card card-indicador flex-fill border">
+
+								<div class="d-flex align-items-center justify-content-between mb-2">
+
+									<span class="text-success fw-semibold fs-6">
+										<i class="bi bi-graph-up-arrow me-1"></i>
+										Suas cotas
+									</span>
+
+									<span class="badge text-bg-success">
+										2 cotas
+									</span>
+
+								</div>
+
+								<hr class="my-2">
+
+								<div class="d-flex justify-content-between align-items-center py-1">
+									<span class="text-secondary fw-medium">
+										Cota #8
+									</span>
+
+									<span class="text-success fw-bold fs-5">
+										100%
+									</span>
+								</div>
+
+								<hr class="my-1 opacity-25">
+
+								<div class="d-flex justify-content-between align-items-center py-1">
+									<span class="text-secondary fw-medium">
+										Cota #5
+									</span>
+
+									<span class="text-success fw-bold fs-5">
+										50%
+									</span>
+								</div>
+
+								<hr class="my-2">
+
+								<!-- Valor individual da cota -->
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="text-secondary small">
+										Valor individual da cota:
+									</span>
+
+									<span class="text-dark fw-bold">
+										R$ 350,00
+									</span>
+								</div>
+
+							</div>
+
+
+
+							<!-- Card: Valor Cartas de Crédito -->
+							<div class="card card-indicador flex-fill border col-12">
+
+								<span class="text-success fw-semibold fs-6 mb-2">
+									<i class="bi bi-clipboard2-data me-1"></i>
+									Valor Cartas de crédito:
+								</span>
+
+								<span class="text-success fw-bold fs-4">
+									R$ 3.900,00
+								</span>
+
+								<span class="text-secondary small mt-1">
+									Soma de todas as cotas
+								</span>
+
+							</div>
+
+							<!-- Card: Valor contemplado -->
+							<div class="card card-indicador flex-fill border col-12">
+
+								<span class="text-success fw-semibold fs-6 mb-2">
+									<i class="bi bi-currency-dollar me-1"></i>
+									Valor contemplado:
+								</span>
+
+								<span class="text-success fw-bold fs-4">
+									R$ 3.900,00
+								</span>
+
+								<span class="text-secondary small mt-1">
+									Até agora
+								</span>
+
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
+
+
+				<!-- Início Card Evolução das Parcelas -->
+				<div class="col-md-4">
+					<div class="card card-stat d-flex flex-column">
+
+						<div>
+							<span class="text-secondary fw-semibold fs-6">
+								EVOLUÇÃO DAS SUAS PARCELAS
+							</span>
+
+							<hr class="border border-secondary">
+
+							<div class="progress-container">
+
+								<div class="progress-label-row">
+									<span class="progress-label">
+										Parcelas pagas 12 de 100
+									</span>
+								</div>
+
+								<div class="progress" role="progressbar" aria-label="Parcelas pagas" aria-valuenow="12"
+									aria-valuemin="0" aria-valuemax="100">
+
+									<div class="progress-bar bg-lime-accent" style="width: 12%">
+									</div>
+
+								</div>
+								<!-- Situação do consórcio -->
+								<div class="d-flex align-items-center justify-content-end gap-1 mt-5">
+
+									<span class="text-secondary small">
+										Situação do consórcio
+									</span>
+
+									<span class="badge rounded-pill text-bg-danger">
+										ATRASO
+									</span>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+
+		<!-- FIM: 03 cartões do topo -->
+
+
+		<!-- LEFT AREA: Primary Dashboard Stats & Tables -->
+
+		<div class="col-12">
+
+			<!-- START: Details Area (Transactions + Performance Charts) -->
+			<div class="row g-2 mt-2">
+
+				<!-- Column: Revenue Chart (Full Width / Wider) -->
+
+				<!-- Column: Transaction List -->
+				<div class="col-md-4 d-flex flex-column">
+					<div class="card h-100 flex-grow-1">
+						<span class="stat-label">Extrato Parcelas</span>
+						<!-- Transaction Items List -->
+						<div class="transaction-list">
+							<div class="transaction-item">
+								<div class="me-3">
+									<i class="bi bi-cash-coin"></i>
+								</div>
+								<div class="transaction-info">
+									<div class="transaction-name">Nov/26</div>
+									<div class="transaction-date">Pago em 12/11/26</div>
+								</div>
+								<div class="transaction-info d-flex flex-column align-items-end gap-1">
+									<span class="badge rounded-pill text-bg-success">
+										<i class="bi bi-cash me-1"></i>Pago
+									</span>
+									<div class="transaction-amount text-main">R$ 350,00</div>
+								</div>
+							</div>
+							<div class="transaction-list">
+								<div class="transaction-item">
+									<div class="me-3">
+										<i class="bi bi-cash-coin"></i>
+									</div>
+									<div class="transaction-info">
+										<div class="transaction-name">Dez/26</div>
+										<div class="transaction-date">Pago em: 12/11/26</div>
+									</div>
+									<div class="transaction-info d-flex flex-column align-items-end gap-1">
+										<span class="badge rounded-pill text-bg-warning">
+											<i class="bi bi-clock-history me-1"></i> Em aberto
+										</span>
+										<div class="transaction-amount text-main">R$ 350,00</div>
+									</div>
+								</div>
+								<div class="transaction-list">
+									<div class="transaction-item">
+										<div class="me-3">
+											<i class="bi bi-cash-coin"></i>
+										</div>
+										<div class="transaction-info">
+											<div class="transaction-name">Jan/27</div>
+											<div class="transaction-date">Pago em: 12/11/26</div>
+										</div>
+										<div class="transaction-info d-flex flex-column align-items-end gap-1">
+											<span class="badge rounded-pill text-bg-danger">
+												<i class="bi bi-emoji-angry me-1"></i> Em atraso
+											</span>
+											<div class="transaction-amount text-main">R$ 350,00</div>
+										</div>
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+
+
+		</div>
+
+
+
+
+
+		<!-- FOOTER  -->
+		<footer class="footer-custom" style="margin-top: 45px;">
+			<div class="footer-left">
+				<span class="footer-logo">
+					<i class="bi bi-hand-thumbs-up me-1"></i>
+					Minha página
+				</span>
+
+				<span class="footer-separator">|</span>
+
+				<span class="footer-copy">
+					&copy; 2026 Santiago Sistemas
+				</span>
+			</div>
+		</footer>
+		<!-- END: Footer Component -->
+	</div>
+
+	<!-- ==========================================
+         END: Main Content Area
+         ========================================== -->
+
+
+
+
+	<!-- Bibliotecas Script -->
+	<script th:src="@{/assets/libs/jquery/jquery-4.0.0.min.js}"></script>
+	<script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+	<script th:src="@{/assets/libs/flatpickr/flatpickr.min.js}"></script>
+	<script th:src="@{/assets/js/csrf.js}"></script>
+
+	<!-- Biblioteca dashboard  -->
+	<script th:src="@{/assets/js/dashboard.js}"></script>
+
+	<!-- SCRIPT DOS MENUS -->
+	<script th:inline="javascript">
+		$(document).ready(function () {
+
+			const menuUrl = $("#menu").attr("data-url");
+			const navbarUrl = $("#topnavbar").attr("data-url");
+
+			$("#menu").load(menuUrl, function (response, status, xhr) {
+				if (status === "error") {
+					console.error("Erro ao carregar menu:", xhr.status, menuUrl);
+				}
+			});
+
+			$("#topnavbar").load(navbarUrl, function (response, status, xhr) {
+				if (status === "error") {
+					console.error("Erro ao carregar topnavbar:", xhr.status, navbarUrl);
+				}
+			});
+
+		});
+	</script>
+	<!-- SCRIPT DOS MENUS -->
+
+
+	<!-- CONFIG PARA AS URLS NÃO QUEBRAREM NO SERVIDOR -->
+	<div id="config" th:attr="data-salvar-url=@{/api/usuario/salvar},
+              data-listar-url=@{/usuarios}">
+	</div>
+
+
+	<script>
+
+		//Olho da senha visível ou não
+		const senha = document.getElementById("senha");
+		const togglePassword = document.getElementById("toggle-password");
+		const icone = togglePassword.querySelector("i");
+
+		togglePassword.addEventListener("click", function () {
+
+			if (senha.type === "password") {
+				// Mostrar a senha
+				senha.type = "text";
+
+				// Trocar para o ícone de olho fechado
+				icone.classList.remove("bi-eye");
+				icone.classList.add("bi-eye-slash");
+
+				togglePassword.setAttribute("aria-label", "Ocultar senha");
+
+			} else {
+				// Ocultar a senha
+				senha.type = "password";
+
+				// Voltar para o ícone de olho aberto
+				icone.classList.remove("bi-eye-slash");
+				icone.classList.add("bi-eye");
+
+				togglePassword.setAttribute("aria-label", "Mostrar senha");
+			}
+
+		});
+
+
+		//URLS PARA USAR NOS CÓDIGOS
+		const config = document.getElementById("config");
+
+		const salvarUrl = config.dataset.salvarUrl;
+		const listarUrl = config.dataset.listarUrl;
+
+
+		//limpar
+		function limpar() {
+			const campos = [
+				"id",
+				"nome",
+				"cpf",
+				"email",
+				"telefone",
+				"senha",
+				"situacao",
+				"administrador",
+				"dataCadastro"
+			]
+
+			campos.forEach(function (campoId) {
+				const campo = document.getElementById(campoId);
+
+				if (!campo) return;
+
+				if (campo.type === "checkbox") {
+					campo.checked = false;
+				} else {
+					campo.value = "";
+				}
+			});
+
+			const divId = document.getElementById("divId");
+			const divDataCadastro = document.getElementById("divDataCadastro");
+
+			if (divId) divId.style.display = "none";
+			if (divDataCadastro) divDataCadastro.style.display = "none";
+
+			let mensagem = document.getElementById("msg");
+			mensagem.textContent = '';
+			mensagem.className = '';
+		}
+
+
+
+		// Página lista de usuários
+		function listarUsuarios() {
+			window.location.href = listarUrl;
+		}
+
+
+
+		//Script que formata o CPF
+		const cpf = document.getElementById("cpf");
+
+		cpf.addEventListener("input", function () {
+
+			let valor = this.value.replace(/\D/g, "");
+
+			valor = valor.substring(0, 11);
+
+			valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+			valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+			valor = valor.replace(/(\d{3})(\d{1,2})/, "$1-$2");
+
+			this.value = valor;
+		});
+
+
+		//Script que formata o Telefone
+		const telefone = document.getElementById("telefone");
+
+		telefone.addEventListener("input", function () {
+
+			let valor = this.value.replace(/\D/g, "");
+
+			valor = valor.substring(0, 11);
+
+			if (valor.length > 10) {
+				// Celular: (99) 99999-9999
+				valor = valor.replace(/^(\d{2})(\d{5})(\d{1,4})$/, "($1) $2-$3");
+			} else if (valor.length > 6) {
+				// Telefone fixo: (99) 9999-9999
+				valor = valor.replace(/^(\d{2})(\d{4})(\d{1,4})$/, "($1) $2-$3");
+			} else if (valor.length > 2) {
+				valor = valor.replace(/^(\d{2})(\d+)$/, "($1) $2");
+			} else if (valor.length > 0) {
+				valor = valor.replace(/^(\d+)$/, "($1");
+			}
+
+			this.value = valor;
+		});
+
+
+
+		//AJAX COMPLETO QUE SALVA O FORMULÁRIO E TRATA ERROS
+		document.getElementById("usuarioForm").addEventListener("submit", async function (event) {
+
+			// Evita que formulário seja tratado com os eventos comuns
+			event.preventDefault();
+
+
+			//Captura as variáveis
+			const formulario = this;
+			const mensagem = document.getElementById("msg");
+			mensagem.textContent = "";
+
+
+
+			// Verifica se todos os campos são válidos
+			if (!formulario.reportValidity()) {
+				return; // Interrompe a execução e não chama o AJAX
+			}
+
+
+
+			// Se todos os campos foram válidos continua a execução
+			const usuario = {
+				id: document.getElementById("id").value || null,
+				nome: document.getElementById("nome").value,
+				cpf: document.getElementById("cpf").value,
+				email: document.getElementById("email").value,
+				senha: document.getElementById("senha").value,
+				situacao: document.getElementById("situacao").checked,
+				administrador: document.getElementById("administrador").checked,
+				telefone: document.getElementById("telefone").value
+
+			};
+
+			try {
+				const response = await fetch(salvarUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(usuario)
+				});
+
+
+
+				// Lê a resposta como texto, independentemente do status
+				const texto = await response.text();
+
+				if (!response.ok) {
+					// Erro retornado pela API
+					mensagem.textContent = texto;
+					mensagem.className = "alert alert-danger";
+					return;
+				}
+
+
+
+
+				// se der certo
+				// Converte o JSON recebido em objeto JavaScript
+				const usuarioSalvo = JSON.parse(texto);
+
+				document.getElementById("divId").style.display = 'block';
+
+				// Preenche os campos com os dados retornados
+				document.getElementById("id").value = usuarioSalvo.id ?? "";
+				document.getElementById("nome").value = usuarioSalvo.nome ?? "";
+				document.getElementById("cpf").value = usuarioSalvo.cpf ?? "";
+				document.getElementById("email").value = usuarioSalvo.email ?? "";
+				document.getElementById("senha").value = "";
+				document.getElementById("telefone").value = usuarioSalvo.telefone ?? "";
+				document.getElementById("situacao").checked = usuarioSalvo.situacao;
+				document.getElementById("administrador").checked = usuarioSalvo.administrador;
+
+				mensagem.textContent = "Usuário salvo com sucesso";
+				mensagem.className = "alert alert-success";
+
+
+
+				// Se der algum exception
+			} catch (error) {
+				mensagem.textContent = "Não foi possível conectar ao servidor.";
+				mensagem.className = "alert alert-danger";
+				console.error(error);
+			}
+
+		});
+
+
+
+
+	</script>
+
+</body>
+
+</html>

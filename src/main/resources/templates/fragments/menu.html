@@ -22,9 +22,15 @@
 					</a>
 				</li>
 				<li class="sidebar-menu-item">
+					<a th:href="@{/meuconsorcio}" class="sidebar-menu-link active" id="menu-overview" title="Overview">
+						<i class="bi bi-piggy-bank"></i>
+						<span>Meu consórcio</span>
+					</a>
+				</li>
+				<li class="sidebar-menu-item">
 					<a th:href="@{/grupo/visao-geral}" class="sidebar-menu-link active" id="menu-overview" title="Overview">
 						<i class="bi bi-window-dock"></i>
-						<span>Consórcio</span>
+						<span>Dados do grupo</span>
 					</a>
 				</li>
 				<li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item">
