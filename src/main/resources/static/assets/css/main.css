@@ -892,7 +892,7 @@ body.sidebar-minimized .sidebar-profile {
 
 /* Stat-specific cards */
 .card-stat {
-    height: 100%;
+    height: auto;
 }
 
 .stat-label {
@@ -1151,7 +1151,7 @@ body.sidebar-minimized .sidebar-profile {
 }
 
 .progress {
-    height: 10px !important;
+    height: 18px !important;
     background-color: var(--bs-body-bg) !important;
     border-radius: 50rem !important;
     overflow: hidden !important;
